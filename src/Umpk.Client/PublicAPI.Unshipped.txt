@@ -157,6 +157,8 @@ Umpk.Client.ClientExtensionRegistration.DisposeAsync() -> System.Threading.Tasks
 Umpk.Client.ClientExtensionRegistration.Id.get -> string!
 Umpk.Client.ClientFeatures
 Umpk.Client.ClientFeatures.ClientFeatures() -> void
+Umpk.Client.ClientFeatures.EntityCollision.get -> bool
+Umpk.Client.ClientFeatures.EntityCollision.set -> void
 Umpk.Client.ClientFeatures.Entities.get -> bool
 Umpk.Client.ClientFeatures.Entities.set -> void
 Umpk.Client.ClientFeatures.Inventory.get -> bool

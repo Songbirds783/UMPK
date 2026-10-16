@@ -8,6 +8,7 @@ public sealed class ClientFeatures
     private bool _inventory = true;
     private bool _physics = true;
     private bool _pathfinding = true;
+    private bool _entityCollision = true;
 
     /// <summary>Whether world/terrain tracking (chunks, light, biomes, border) is enabled.</summary>
     public bool Terrain
@@ -37,6 +38,13 @@ public sealed class ClientFeatures
         set => _physics = value;
     }
 
+    /// <summary>Whether entities act on the local-player physics: hard colliders (boats, shulkers) block movement and living entities push it. Requires <see cref="Physics"/> to mean anything; entity tracking (<see cref="Entities"/>) must also be on for any of it to see entities.</summary>
+    public bool EntityCollision
+    {
+        get => _entityCollision;
+        set => _entityCollision = value;
+    }
+
     /// <summary>Whether pathfinding is enabled. Implies <see cref="Physics"/> and <see cref="Terrain"/>.</summary>
     public bool Pathfinding
     {
@@ -54,6 +62,7 @@ public sealed class ClientFeatures
             Inventory = Inventory,
             Physics = Physics,
             Pathfinding = Pathfinding,
+            EntityCollision = EntityCollision,
         };
         if (copy.Pathfinding)
             copy.Physics = true;

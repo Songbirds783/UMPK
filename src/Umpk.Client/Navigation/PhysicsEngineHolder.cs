@@ -111,13 +111,19 @@ internal sealed class PhysicsEngineHolder
 
         // A respawn or dimension change replaces the world; a piston that was mid-extension in the world the session left behind must not keep pushing in the new one.
         _pistons.Clear();
-        _view = new WorldPhysicsView(world, _shapes);
+        _view = new WorldPhysicsView(world, _shapes, EntityAccessor);
         _engine = new PlayerPhysics(_view, _profile);
         SelfState self = _services.State.Self;
         _engine.Reset(self.Position, self.Yaw, self.Pitch);
         _engine.SetVelocity(self.Velocity);
         PushConditions();
     }
+
+    /// <summary>The per-tick entity lookup handed to the view, or null when entity collision is disabled. Reads through <c>Features.Entities</c> as well so a session built without entity tracking answers null instead of throwing.</summary>
+    private EntityStore? EntityAccessor() =>
+        _services.State.Features.EntityCollision && _services.State.Features.Entities
+            ? _services.State.Entities
+            : null;
 
     /// <summary>Recomputes and pushes physics conditions from tracked self state.</summary>
     public void PushConditions()
