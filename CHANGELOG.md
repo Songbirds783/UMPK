@@ -2,6 +2,10 @@
 
 This file records notable changes to UMPK.
 
+## 0.9.0-beta.7.5.1 - 2026-10-16
+
+- Install the server's `minecraft:worldgen/biome` registry during configuration: the registry_data packet's biome entries were deliberately dropped as consumerless, but `World.GetBiome` IS the consumer and the world was built over a hardcoded single-entry plains placeholder, so every position decoded a biome palette id that resolved to a guess or to nothing. The install is identity-only (the name-to-id mapping is the whole value; the definition fields stay unmodelled), elided known-pack entries keep their slot, and `SetupWorld` now prefers the server's table over the placeholder. Consumers resolve chunk palettes into named entries through `World.GetBiome` — on 1.20.5+ (protocol 766+) servers; the 764/765 combined NBT blob and older join-game registry paths stay unwritten, so those eras keep the placeholder table. The test-count baseline also catches up on the entity-scale cases the last four bumps forgot to record.
+
 ## 0.9.0-beta.7.5 - 2026-10-16
 
 - Review-driven cleanup of the entity collision code, no behaviour change: the `SizeFor` doc now states that the `size` argument is the reported cube size (the `cube_size` key plus one), the data validator whitelists the exact `cube_size|is_baby` key pair instead of every key on index 14, the two physics-view collect passes share one box-building helper, the happy ghast row names its baby arguments like every other entry, and the cube-size read documents its negative-value fallback.
