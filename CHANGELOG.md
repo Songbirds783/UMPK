@@ -2,6 +2,10 @@
 
 This file records notable changes to UMPK.
 
+## 0.9.0-beta.7.4 - 2026-10-16
+
+- Size cube-mob collision boxes by the cube_size metadata key (vanilla AbstractCubeMob.ID_SIZE, one below the reported size): slimes, magma cubes, and sulfur cubes stand in 	ypeDimensions x getSize(), so a size-4 slime collides and pushes at its real 2.08x2.08 instead of the size-1 0.52x0.52. Non-cube types are unaffected, and the data validator now whitelists the one index vanilla assigns twice (14, shared by the AgeableMob baby bit and the cube size).
+
 ## 0.9.0-beta.7.3 - 2026-10-16
 
 - Collision boxes follow the baby life stage: the `is_baby` metadata bit (index 14, shared by `AgeableMob`/`Zombie`/`Piglin`/`Zoglin`) is decoded on protocol 755+, and the 36 types with an explicit vanilla `BABY_DIMENSIONS` use it (baby zombie 0.49x0.98, baby cow 0.45x0.7, ...); every other type halves its adult box, matching vanilla's default `getAgeScale`. Baby and scale compose multiplicatively as in vanilla; eras without the key read every entity as adult.
