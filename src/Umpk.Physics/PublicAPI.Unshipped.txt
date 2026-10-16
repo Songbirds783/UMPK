@@ -322,4 +322,14 @@ static readonly Umpk.Physics.PhysicsConstants.WebStuckSpeedMultiplier -> Umpk.Ge
 Umpk.Physics.BlockShapeOffset
 static Umpk.Physics.BlockShapeOffset.For(Umpk.Game.Blocks.BlockState state, Umpk.Geometry.BlockPos pos) -> Umpk.Geometry.Vec3d
 static Umpk.Physics.BlockShapeOffset.HasOffset(Umpk.Game.Blocks.BlockState state) -> bool
+Umpk.Physics.EntityColliderCatalog
+static Umpk.Physics.EntityColliderCatalog.Default.get -> Umpk.Physics.EntityColliderInfo
+static Umpk.Physics.EntityColliderCatalog.Lookup(string! typeId) -> Umpk.Physics.EntityColliderInfo
+Umpk.Physics.EntityColliderInfo
+Umpk.Physics.EntityColliderInfo.EntityColliderInfo() -> void
+Umpk.Physics.EntityColliderInfo.EntityColliderInfo(double width, double height, bool hardCollider, bool living) -> void
+Umpk.Physics.EntityColliderInfo.HardCollider.get -> bool
+Umpk.Physics.EntityColliderInfo.Height.get -> double
+Umpk.Physics.EntityColliderInfo.Living.get -> bool
+Umpk.Physics.EntityColliderInfo.Width.get -> double
 static Umpk.Physics.PlayerPhysics.WaterHeightForStance(Umpk.Physics.IPhysicsWorldView! world, int x, double feetPlaneY, int z) -> double
