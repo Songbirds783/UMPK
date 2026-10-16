@@ -2,9 +2,13 @@
 
 This file records notable changes to UMPK.
 
+## 0.9.0-beta.7.5 - 2026-10-16
+
+- Review-driven cleanup of the entity collision code, no behaviour change: the `SizeFor` doc now states that the `size` argument is the reported cube size (the `cube_size` key plus one), the data validator whitelists the exact `cube_size|is_baby` key pair instead of every key on index 14, the two physics-view collect passes share one box-building helper, the happy ghast row names its baby arguments like every other entry, and the cube-size read documents its negative-value fallback.
+
 ## 0.9.0-beta.7.4 - 2026-10-16
 
-- Size cube-mob collision boxes by the cube_size metadata key (vanilla AbstractCubeMob.ID_SIZE, one below the reported size): slimes, magma cubes, and sulfur cubes stand in 	ypeDimensions x getSize(), so a size-4 slime collides and pushes at its real 2.08x2.08 instead of the size-1 0.52x0.52. Non-cube types are unaffected, and the data validator now whitelists the one index vanilla assigns twice (14, shared by the AgeableMob baby bit and the cube size).
+- Size cube-mob collision boxes by the cube_size metadata key (vanilla AbstractCubeMob.ID_SIZE, one below the reported size): slimes, magma cubes, and sulfur cubes stand in typeDimensions x getSize(), so a size-4 slime collides and pushes at its real 2.08x2.08 instead of the size-1 0.52x0.52. Non-cube types are unaffected, and the data validator now whitelists the one index vanilla assigns twice (14, shared by the AgeableMob baby bit and the cube size).
 
 ## 0.9.0-beta.7.3 - 2026-10-16
 
