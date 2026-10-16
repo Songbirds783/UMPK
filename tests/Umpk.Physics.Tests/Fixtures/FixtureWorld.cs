@@ -33,6 +33,7 @@ public sealed class FixtureWorld : IPhysicsWorldView
     private readonly FixtureBlockData _data = new();
     private readonly Dictionary<BlockPos, BlockKind> _blocks = [];
     private readonly List<Aabb> _entityColliders = [];
+    private readonly List<EntityPusher> _entityPushers = [];
 
     /// <summary>All positions are loaded by default; set to false to test unloaded-chunk fall drift.</summary>
     public bool AllChunksLoaded { get; set; } = true;
@@ -63,6 +64,13 @@ public sealed class FixtureWorld : IPhysicsWorldView
     public FixtureWorld AddEntityCollider(Aabb box)
     {
         _entityColliders.Add(box);
+        return this;
+    }
+
+    /// <summary>Adds an entity pusher at the given feet-centre XZ, unfiltered by box intersection — the intersection gate belongs to the live view, and engine tests place pushers deliberately.</summary>
+    public FixtureWorld AddEntityPusher(double x, double z)
+    {
+        _entityPushers.Add(new EntityPusher(x, z));
         return this;
     }
 
@@ -102,5 +110,11 @@ public sealed class FixtureWorld : IPhysicsWorldView
             if (box.Intersects(region))
                 into.Add(box);
 
+    }
+
+    public void CollectEntityPushers(in Aabb playerBox, ICollection<EntityPusher> into)
+    {
+        foreach (EntityPusher pusher in _entityPushers)
+            into.Add(pusher);
     }
 }

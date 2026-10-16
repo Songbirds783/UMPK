@@ -332,4 +332,10 @@ Umpk.Physics.EntityColliderInfo.HardCollider.get -> bool
 Umpk.Physics.EntityColliderInfo.Height.get -> double
 Umpk.Physics.EntityColliderInfo.Living.get -> bool
 Umpk.Physics.EntityColliderInfo.Width.get -> double
+Umpk.Physics.EntityPusher
+Umpk.Physics.EntityPusher.EntityPusher() -> void
+Umpk.Physics.EntityPusher.EntityPusher(double x, double z) -> void
+Umpk.Physics.EntityPusher.X.get -> double
+Umpk.Physics.EntityPusher.Z.get -> double
+Umpk.Physics.IPhysicsWorldView.CollectEntityPushers(in Umpk.Geometry.Aabb playerBox, System.Collections.Generic.ICollection<Umpk.Physics.EntityPusher>! into) -> void
 static Umpk.Physics.PlayerPhysics.WaterHeightForStance(Umpk.Physics.IPhysicsWorldView! world, int x, double feetPlaneY, int z) -> double

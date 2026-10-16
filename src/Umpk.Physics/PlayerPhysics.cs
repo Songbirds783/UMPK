@@ -229,6 +229,8 @@ public sealed class PlayerPhysics : IPistonPushTarget
 
         HandleJumping();
 
+        PushFromEntities();
+
         var travelInput = new Vec3d(_xxa, _yya, _zza);
         Travel(travelInput);
 
@@ -262,6 +264,35 @@ public sealed class PlayerPhysics : IPistonPushTarget
     private double _lastLandingFallDistance;
     private bool _bouncedThisTick;
     private bool _wasGliding;
+
+    /// <summary>Scratch buffer for this tick's entity pushers, reused across ticks so the hot path allocates nothing.</summary>
+    private readonly List<EntityPusher> _pushers = [];
+
+    /// <summary>Applies the vanilla entity push: every nearby living entity whose box overlaps the player box shoves the player away from it.
+    ///
+    /// <para>Mirrors vanilla <c>Entity.push(Entity)</c> with the exact 26.3 constants: with <c>d</c> the larger of |dx|, |dz| between the two feet centres, a push happens only when <c>d &gt;= 0.01</c>, and the per-tick delta is <c>0.05 * min(1, 1/sqrt(d)) * (dx, dz)/sqrt(d)</c> — direction away from the pusher. The reverse branch (the local player shoving the other entity back) is deliberately absent: the other entity's motion is server-owned, and the vanilla client discards it the same way.</para>
+    ///
+    /// <para>Position in the tick is load-bearing, matching vanilla <c>aiStep</c>: push lands after tiny-velocity zeroing and jumping but before travel, so the delta feeds the same tick's movement instead of being decayed first.</para></summary>
+    private void PushFromEntities()
+    {
+        _pushers.Clear();
+        _world.CollectEntityPushers(BoundingBox, _pushers);
+
+        for (int i = 0; i < _pushers.Count; i++)
+        {
+            double xa = _pushers[i].X - _position.X;
+            double za = _pushers[i].Z - _position.Z;
+            double dd = Math.Max(Math.Abs(xa), Math.Abs(za));
+            if (dd < 0.009999999776482582)
+                continue;
+
+            double scale = Math.Sqrt(dd);
+            xa /= scale;
+            za /= scale;
+            double pow = Math.Min(1.0, 1.0 / scale);
+            _velocity = _velocity.Add(-xa * pow * 0.05000000074505806, 0.0, -za * pow * 0.05000000074505806);
+        }
+    }
 
     // Environment
 
