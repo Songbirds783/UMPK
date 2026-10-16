@@ -3,7 +3,7 @@
     "version": "26.3",
     "protocol": 777,
     "kind": "curated",
-    "note": "tier-2 semantic metadata key indices; verified against 26.3-decompiled Entity/defineSynchedData order (shared_flags 0, air_supply 1, custom_name 2, custom_name_visible 3, silent 4, no_gravity 5, pose 6, ticks_frozen 7) and LivingEntity order (flags 8, health 9, effect_particles 10, effect_ambience 11, arrow_count 12); is_baby 14 verified as the AgeableMob/Zombie/Piglin/Zoglin DATA_BABY_ID (Mob.DATA_MOB_FLAGS_ID 13, no fields on PathfinderMob/Monster/PiglinAbstract; F26.3 decompile)"
+    "note": "tier-2 semantic metadata key indices; verified against 26.3-decompiled Entity/defineSynchedData order (shared_flags 0, air_supply 1, custom_name 2, custom_name_visible 3, silent 4, no_gravity 5, pose 6, ticks_frozen 7) and LivingEntity order (flags 8, health 9, effect_particles 10, effect_ambience 11, arrow_count 12); is_baby 14 verified as the AgeableMob/Zombie/Piglin/Zoglin DATA_BABY_ID (Mob.DATA_MOB_FLAGS_ID 13, no fields on PathfinderMob/Monster/PiglinAbstract; F26.3 decompile); cube_size 14 verified as AbstractCubeMob.ID_SIZE (Mob.DATA_MOB_FLAGS_ID 13, ID_SIZE defined on AbstractCubeMob; metadata carries reported size - 1; F26.3 decompile)"
   },
   "entity_keys": {
     "shared_flags": 0,
@@ -18,7 +18,8 @@
     "effect_particles": 10,
     "effect_ambience": 11,
     "arrow_count": 12,
-    "is_baby": 14
+    "is_baby": 14,
+    "cube_size": 14
   },
   "item_entity_keys": {
     "carried_item": 8

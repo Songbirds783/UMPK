@@ -132,6 +132,7 @@ internal sealed partial class Emitter
         ["effect_ambience"] = "EffectAmbience",
         ["arrow_count"] = "ArrowCount",
         ["is_baby"] = "IsBaby",
+        ["cube_size"] = "CubeSize",
     };
 
     /// <summary>1.8's metadata terminator. Its serializer table is a different wire format entirely.</summary>

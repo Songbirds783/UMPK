@@ -102,5 +102,6 @@ public sealed partial class JavaEntityMetadataKeys
             new(EntityMetadataKeys.EffectAmbience, 11),
             new(EntityMetadataKeys.ArrowCount, 12),
             new(EntityMetadataKeys.IsBaby, 14),
+            new(EntityMetadataKeys.CubeSize, 14),
         ]);
 }

@@ -549,7 +549,7 @@ internal static partial class Validator
             if (index < 0)
                 problems.Add($"proto {version.Protocol}: metadata key '{name}' has negative index {index}");
 
-            else if (!used.Add(index))
+            else if (!used.Add(index) && !SharedMetadataIndexes.Contains(index))
                 problems.Add($"proto {version.Protocol}: metadata key '{name}' reuses index {index}");
 
         // Entity's own block is allocated in declaration order, so the five 1.8 fields are 0 through 4 on every protocol and the conditional ones follow in that order where they exist.
@@ -580,8 +580,11 @@ internal static partial class Validator
 
     private static readonly HashSet<string> KnownMetadataKeys =
     [
-        .. RequiredMetadataKeys, "no_gravity", "pose", "ticks_frozen", "is_baby",
+        .. RequiredMetadataKeys, "no_gravity", "pose", "ticks_frozen", "is_baby", "cube_size",
     ];
+
+    /// <summary>Metadata indexes vanilla assigns twice, once per subclass chain: an index is the next free slot of the declaring class's own chain, so two chains that never mix can legitimately share one. Both <c>is_baby</c> (AgeableMob, whose Zombie/Piglin/Zoglin subclasses reuse the same accessor) and <c>cube_size</c> (AbstractCubeMob for slimes/magma cubes/sulfur cubes) sit at 14, directly after Mob's flag at 13. Any reuse outside this table is still a real conflict.</summary>
+    private static readonly HashSet<int> SharedMetadataIndexes = [14];
 
     /// <summary>
     /// The <c>minecraft:menu</c> table. Every protocol must declare one, both eras: the pre-1.14 dataset must be non-empty. The two eras key differently, so each is checked on its own terms: 1.14+ ids must be gapless from 0, while pre-1.14 has no numeric wire id at all and must instead carry a distinct wire string per entry, which is the only key an open_screen can be resolved by there.

@@ -327,14 +327,15 @@ static Umpk.Physics.EntityColliderCatalog.Default.get -> Umpk.Physics.EntityColl
 static Umpk.Physics.EntityColliderCatalog.Lookup(string! typeId) -> Umpk.Physics.EntityColliderInfo
 Umpk.Physics.EntityColliderInfo
 Umpk.Physics.EntityColliderInfo.EntityColliderInfo() -> void
-Umpk.Physics.EntityColliderInfo.EntityColliderInfo(double width, double height, bool hardCollider, bool living, double maxScale = Infinity, double babyWidth = Infinity, double babyHeight = Infinity) -> void
+Umpk.Physics.EntityColliderInfo.EntityColliderInfo(double width, double height, bool hardCollider, bool living, double maxScale = Infinity, double babyWidth = Infinity, double babyHeight = Infinity, bool sizeScaled = false) -> void
 Umpk.Physics.EntityColliderInfo.BabyHeight.get -> double
 Umpk.Physics.EntityColliderInfo.BabyWidth.get -> double
 Umpk.Physics.EntityColliderInfo.HardCollider.get -> bool
 Umpk.Physics.EntityColliderInfo.Height.get -> double
 Umpk.Physics.EntityColliderInfo.Living.get -> bool
 Umpk.Physics.EntityColliderInfo.MaxScale.get -> double
-Umpk.Physics.EntityColliderInfo.SizeFor(bool baby, double scale) -> (double Width, double Height)
+Umpk.Physics.EntityColliderInfo.SizeFor(bool baby, double scale, double size = 1) -> (double Width, double Height)
+Umpk.Physics.EntityColliderInfo.SizeScaled.get -> bool
 Umpk.Physics.EntityColliderInfo.Width.get -> double
 Umpk.Physics.EntityPusher
 Umpk.Physics.EntityPusher.EntityPusher() -> void

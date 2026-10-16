@@ -142,8 +142,48 @@ public sealed class EntityScaleCollisionTests
         Assert.Empty(beyondBabyReach);
     }
 
+    [Fact]
+    public void CubeSize_ScalesSlimePushReach()
+    {
+        // A size-4 slime (metadata 3, one below the reported size) is 2.08 wide: its push reach ends at
+        // x=1.04, while the size-1 default (0.52) ends at x=0.26. Boxes are centered on the position.
+        (WorldPhysicsView bigView, _, _) = BuildViewWith("slime", scale: null, cubeSize: 3);
+        var bigPushers = new List<EntityPusher>();
+        bigView.CollectEntityPushers(Aabb.OfSize(0.5, 0.0, 0.0, 0.6, 1.8), bigPushers);
+        Assert.Single(bigPushers);
+
+        var bigBeyond = new List<EntityPusher>();
+        bigView.CollectEntityPushers(Aabb.OfSize(1.5, 0.0, 0.0, 0.6, 1.8), bigBeyond);
+        Assert.Empty(bigBeyond);
+
+        (WorldPhysicsView smallView, _, _) = BuildViewWith("slime", scale: null);
+        var smallPushers = new List<EntityPusher>();
+        smallView.CollectEntityPushers(Aabb.OfSize(0.1, 0.0, 0.0, 0.6, 1.8), smallPushers);
+        Assert.Single(smallPushers);
+
+        var smallBeyond = new List<EntityPusher>();
+        smallView.CollectEntityPushers(Aabb.OfSize(0.7, 0.0, 0.0, 0.6, 1.8), smallBeyond);
+        Assert.Empty(smallBeyond);
+    }
+
+    [Fact]
+    public void CubeSize_FollowsVanillaSizeTerm()
+    {
+        // All three cube mobs share AbstractCubeMob's typeDimensions x getSize() override: a size-3 magma
+        // cube is 1.56 and a size-2 sulfur cube 0.98. SizeFor is pure arithmetic — the guard that keeps
+        // non-cube types at size 1 lives in WorldPhysicsView, which only feeds the key for sizeScaled types.
+        var magma = EntityColliderCatalog.Lookup("magma_cube");
+        Assert.Equal((1.56, 1.56), magma.SizeFor(baby: false, scale: 1.0, size: 3));
+
+        var sulfur = EntityColliderCatalog.Lookup("sulfur_cube");
+        Assert.Equal((0.98, 0.98), sulfur.SizeFor(baby: false, scale: 1.0, size: 2));
+
+        Assert.True(magma.SizeScaled && sulfur.SizeScaled);
+        Assert.False(EntityColliderCatalog.Lookup("cow").SizeScaled);
+    }
+
     private static (WorldPhysicsView View, EntityStore Store, Entity Entity) BuildViewWith(
-        string typeId, double? scale, bool baby = false)
+        string typeId, double? scale, bool baby = false, int? cubeSize = null)
     {
         Registry<BlockDefinition> blocks = JavaGameData.Registries(Protocol).Blocks;
         var data = new RegistryBlockDataSource(blocks, isLegacy: false);
@@ -165,6 +205,9 @@ public sealed class EntityScaleCollisionTests
 
         if (baby)
             entity.Metadata.Set(14, MetadataValue.Boolean(true));
+
+        if (cubeSize is not null)
+            entity.Metadata.Set(14, MetadataValue.VarInt(cubeSize.Value));
 
         if (scale is not null)
         {

@@ -10,6 +10,7 @@ namespace Umpk.Physics;
 /// <param name="maxScale">Upper bound the type clamps its <c>minecraft:scale</c> attribute to — vanilla's <c>sanitizeScale</c> overrides: ender dragon forces 1.0, happy ghast clamps to 1.0, shulker clamps to 3.0, every other type is unlimited.</param>
 /// <param name="babyWidth">The type's explicit vanilla <c>BABY_DIMENSIONS</c> width, or <see cref="double.PositiveInfinity"/> when the type has none.</param>
 /// <param name="babyHeight">The type's explicit vanilla <c>BABY_DIMENSIONS</c> height, or <see cref="double.PositiveInfinity"/> when the type has none.</param>
+/// <param name="sizeScaled">Whether the type's standing box is multiplied by its cube-mob size — vanilla's <c>AbstractCubeMob.getDefaultDimensions</c> override shared by slimes, magma cubes, and sulfur cubes (<c>typeDimensions x getSize()</c>).</param>
 public readonly struct EntityColliderInfo(
     double width,
     double height,
@@ -17,7 +18,8 @@ public readonly struct EntityColliderInfo(
     bool living,
     double maxScale = double.PositiveInfinity,
     double babyWidth = double.PositiveInfinity,
-    double babyHeight = double.PositiveInfinity)
+    double babyHeight = double.PositiveInfinity,
+    bool sizeScaled = false)
 {
     /// <summary>Adult bounding-box width in blocks.</summary>
     public double Width { get; } = width;
@@ -40,15 +42,18 @@ public readonly struct EntityColliderInfo(
     /// <summary>The type's explicit vanilla <c>BABY_DIMENSIONS</c> height; <see cref="double.PositiveInfinity"/> means the type has no explicit baby box.</summary>
     public double BabyHeight { get; } = babyHeight;
 
-    /// <summary>Vanilla 26.3 <c>LivingEntity.getDimensions</c>: the standing box is <c>typeDimensions x getAgeScale() x getScale()</c>, where a type with an explicit <c>BABY_DIMENSIONS</c> overrides the whole age term and every other baby halves the adult box (<c>getAgeScale</c> returning 0.5). <paramref name="scale"/> is the <c>minecraft:scale</c> attribute value already clamped through <see cref="MaxScale"/>.</summary>
-    public (double Width, double Height) SizeFor(bool baby, double scale)
+    /// <summary>Whether the type's standing box is multiplied by its cube-mob size (vanilla <c>AbstractCubeMob.getDefaultDimensions</c>); the size arrives as the <c>cube_size</c> metadata key, one below the reported size.</summary>
+    public bool SizeScaled { get; } = sizeScaled;
+
+    /// <summary>Vanilla 26.3 <c>LivingEntity.getDimensions</c>: the standing box is <c>typeDimensions x getAgeScale() x getScale()</c>, where a type with an explicit <c>BABY_DIMENSIONS</c> overrides the whole age term and every other baby halves the adult box (<c>getAgeScale</c> returning 0.5). Cube-mob types (<paramref name="size"/> from the <c>cube_size</c> metadata key, one below the reported size) instead multiply by their size per <c>AbstractCubeMob.getDefaultDimensions</c>. <paramref name="scale"/> is the <c>minecraft:scale</c> attribute value already clamped through <see cref="MaxScale"/>.</summary>
+    public (double Width, double Height) SizeFor(bool baby, double scale, double size = 1.0)
     {
         if (!baby)
-            return (Width * scale, Height * scale);
+            return (Width * size * scale, Height * size * scale);
 
         return double.IsPositiveInfinity(BabyWidth)
-            ? (Width * 0.5 * scale, Height * 0.5 * scale)
-            : (BabyWidth * scale, BabyHeight * scale);
+            ? (Width * 0.5 * size * scale, Height * 0.5 * size * scale)
+            : (BabyWidth * size * scale, BabyHeight * size * scale);
     }
 }
 
@@ -155,7 +160,7 @@ public static class EntityColliderCatalog
         ["illusioner"] = new(0.6, 1.95, false, true),
         ["iron_golem"] = new(1.4, 2.7, false, true),
         ["llama"] = new(0.9, 1.87, false, true, babyWidth: 0.9 * 0.5, babyHeight: 1.87 * 0.5),
-        ["magma_cube"] = new(0.52, 0.52, false, true),
+        ["magma_cube"] = new(0.52, 0.52, false, true, sizeScaled: true),
         ["mannequin"] = new(0.6, 1.8, false, true),
         ["mooshroom"] = new(0.9, 1.4, false, true, babyWidth: 0.45, babyHeight: 0.7),
         ["mule"] = new(1.3964844, 1.6, false, true),
@@ -178,14 +183,14 @@ public static class EntityColliderCatalog
         ["silverfish"] = new(0.4, 0.3, false, true),
         ["skeleton"] = new(0.6, 1.99, false, true),
         ["skeleton_horse"] = new(1.3964844, 1.6, false, true, babyWidth: 1.3964844 * 0.7, babyHeight: 1.6 * 0.7),
-        ["slime"] = new(0.52, 0.52, false, true),
+        ["slime"] = new(0.52, 0.52, false, true, sizeScaled: true),
         ["sniffer"] = new(1.9, 1.75, false, true),
         ["snow_golem"] = new(0.7, 1.9, false, true),
         ["spider"] = new(1.4, 0.9, false, true),
         ["squid"] = new(0.8, 0.8, false, true, babyWidth: 0.5, babyHeight: 0.5),
         ["stray"] = new(0.6, 1.99, false, true),
         ["strider"] = new(0.9, 1.7, false, true, babyWidth: 0.45, babyHeight: 0.85),
-        ["sulfur_cube"] = new(0.49, 0.49, false, true),
+        ["sulfur_cube"] = new(0.49, 0.49, false, true, sizeScaled: true),
         ["tadpole"] = new(0.4, 0.3, false, true),
         ["trader_llama"] = new(0.9, 1.87, false, true, babyWidth: 0.9 * 0.5, babyHeight: 1.87 * 0.5),
         ["tropical_fish"] = new(0.5, 0.4, false, true),

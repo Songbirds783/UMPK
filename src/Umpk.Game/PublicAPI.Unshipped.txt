@@ -2647,6 +2647,7 @@ static Umpk.Game.Entities.EntityMetadataKeys.CustomName.get -> Umpk.Game.Entitie
 static Umpk.Game.Entities.EntityMetadataKeys.CustomNameVisible.get -> Umpk.Game.Entities.MetadataKey<bool>!
 static Umpk.Game.Entities.EntityMetadataKeys.EffectAmbience.get -> Umpk.Game.Entities.MetadataKey<bool>!
 static Umpk.Game.Entities.EntityMetadataKeys.EffectParticles.get -> Umpk.Game.Entities.MetadataKey<int>!
+static Umpk.Game.Entities.EntityMetadataKeys.CubeSize.get -> Umpk.Game.Entities.MetadataKey<int>!
 static Umpk.Game.Entities.EntityMetadataKeys.Health.get -> Umpk.Game.Entities.MetadataKey<float>!
 static Umpk.Game.Entities.EntityMetadataKeys.IsBaby.get -> Umpk.Game.Entities.MetadataKey<bool>!
 static Umpk.Game.Entities.EntityMetadataKeys.NoGravity.get -> Umpk.Game.Entities.MetadataKey<bool>!

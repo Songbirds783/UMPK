@@ -46,4 +46,7 @@ public static class EntityMetadataKeys
 
     /// <summary>Whether the entity is in its baby life stage. Declared by <c>AgeableMob</c>, <c>Zombie</c>, <c>Piglin</c>, and <c>Zoglin</c> at the same index (1.17+); absent on older eras, where every entity then reads as adult.</summary>
     public static MetadataKey<bool> IsBaby { get; } = new("is_baby", v => v.AsBoolean());
+
+    /// <summary>The zero-based cube-mob size used to size slimes, magma cubes, and sulfur cubes — vanilla's <c>AbstractCubeMob.ID_SIZE</c>, one below the reported size. The standing box is <c>typeDimensions x (value + 1)</c>; the key is present on every era the cube mobs exist in, so a missing read means the entity is not a cube mob.</summary>
+    public static MetadataKey<int> CubeSize { get; } = new("cube_size", v => v.AsVarInt());
 }
