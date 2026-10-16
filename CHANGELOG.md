@@ -1,6 +1,10 @@
-﻿# Changelog
+# Changelog
 
 This file records notable changes to UMPK.
+
+## 0.9.0-beta.7.2 - 2026-10-16
+
+- Size entity collision boxes by the server-synced `minecraft:scale` attribute (1.20.5+), clamped through vanilla's `sanitizeScale` bounds (ender dragon 1.0, happy ghast 1.0, shulker 3.0), so `/attribute` resize commands are collided with at their real size.
 
 ## 0.9.0-beta.7.1 - 2026-10-16
 
