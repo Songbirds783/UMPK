@@ -34,9 +34,7 @@ internal sealed class WorldPhysicsView(
             if (!info.HardCollider)
                 continue;
 
-            double scale = EffectiveScale(entity, info);
-            (double width, double height) = info.SizeFor(IsBaby(entity), scale, CubeSize(entity, info));
-            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, width, height);
+            Aabb box = BoxOf(entity, info);
             if (box.Intersects(region))
                 into.Add(box);
         }
@@ -54,19 +52,25 @@ internal sealed class WorldPhysicsView(
             if (!info.Living)
                 continue;
 
-            double scale = EffectiveScale(entity, info);
-            (double width, double height) = info.SizeFor(IsBaby(entity), scale, CubeSize(entity, info));
-            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, width, height);
+            Aabb box = BoxOf(entity, info);
             if (box.Intersects(playerBox))
                 into.Add(new EntityPusher(entity.Position.X, entity.Position.Z));
         }
+    }
+
+    /// <summary>The entity's standing collision box: the catalog size folded through the baby stage, the cube-mob size, and the scale attribute, centred on the tracked feet position. Both collect passes share it — the only difference between them is which catalog flag gates entry.</summary>
+    private static Aabb BoxOf(Entity entity, EntityColliderInfo info)
+    {
+        double scale = EffectiveScale(entity, info);
+        (double width, double height) = info.SizeFor(IsBaby(entity), scale, CubeSize(entity, info));
+        return Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, width, height);
     }
 
     /// <summary>The <c>is_baby</c> metadata bit (<c>AgeableMob</c>/<c>Zombie</c>/<c>Piglin</c>/<c>Zoglin</c>, index 14 on 755+). A tier-2 miss — no key source, unmapped era, absent value — reads as adult, which is exactly the pre-1.17 behaviour where no baby bit is ever sent.</summary>
     private static bool IsBaby(Entity entity) =>
         entity.Metadata.TryGet(EntityMetadataKeys.IsBaby, out bool baby) && baby;
 
-    /// <summary>The cube-mob size term, valid only for types with <see cref="EntityColliderInfo.SizeScaled"/> set (slimes, magma cubes, sulfur cubes). Vanilla's <c>AbstractCubeMob.ID_SIZE</c> arrives one below the reported size and the standing box multiplies by <c>getSize()</c>, so the read adds 1 back; a miss reads as size 1, the natural default for a freshly spawned cube or any non-cube type.</summary>
+    /// <summary>The cube-mob size term, valid only for types with <see cref="EntityColliderInfo.SizeScaled"/> set (slimes, magma cubes, sulfur cubes). Vanilla's <c>AbstractCubeMob.ID_SIZE</c> arrives one below the reported size and the standing box multiplies by <c>getSize()</c>, so the read adds 1 back; a miss or a negative value reads as size 1, the natural default for a freshly spawned cube or any non-cube type.</summary>
     private static double CubeSize(Entity entity, EntityColliderInfo info) =>
         info.SizeScaled && entity.Metadata.TryGet(EntityMetadataKeys.CubeSize, out int size) && size >= 0
             ? size + 1

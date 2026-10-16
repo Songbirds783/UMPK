@@ -45,7 +45,7 @@ public readonly struct EntityColliderInfo(
     /// <summary>Whether the type's standing box is multiplied by its cube-mob size (vanilla <c>AbstractCubeMob.getDefaultDimensions</c>); the size arrives as the <c>cube_size</c> metadata key, one below the reported size.</summary>
     public bool SizeScaled { get; } = sizeScaled;
 
-    /// <summary>Vanilla 26.3 <c>LivingEntity.getDimensions</c>: the standing box is <c>typeDimensions x getAgeScale() x getScale()</c>, where a type with an explicit <c>BABY_DIMENSIONS</c> overrides the whole age term and every other baby halves the adult box (<c>getAgeScale</c> returning 0.5). Cube-mob types (<paramref name="size"/> from the <c>cube_size</c> metadata key, one below the reported size) instead multiply by their size per <c>AbstractCubeMob.getDefaultDimensions</c>. <paramref name="scale"/> is the <c>minecraft:scale</c> attribute value already clamped through <see cref="MaxScale"/>.</summary>
+    /// <summary>Vanilla 26.3 <c>LivingEntity.getDimensions</c>: the standing box is <c>typeDimensions x getAgeScale() x getScale()</c>, where a type with an explicit <c>BABY_DIMENSIONS</c> overrides the whole age term and every other baby halves the adult box (<c>getAgeScale</c> returning 0.5). Cube-mob types instead multiply by their reported size per <c>AbstractCubeMob.getDefaultDimensions</c>: <paramref name="size"/> is that reported size, i.e. the <c>cube_size</c> metadata key (which arrives one below the reported size) plus one. <paramref name="scale"/> is the <c>minecraft:scale</c> attribute value already clamped through <see cref="MaxScale"/>.</summary>
     public (double Width, double Height) SizeFor(bool baby, double scale, double size = 1.0)
     {
         if (!baby)
@@ -102,7 +102,7 @@ public static class EntityColliderCatalog
         // Shulker (Shulker.canBeCollidedWith -> isAlive) and happy ghast (adult + alive). Happy ghast babies
         // are tracked and ride the explicit 0.2375-scaled baby box.
         ["shulker"] = new(1.0, 1.0, true, true, 3.0),
-        ["happy_ghast"] = new(4.0, 4.0, true, true, 1.0, 4.0 * 0.2375, 4.0 * 0.2375),
+        ["happy_ghast"] = new(4.0, 4.0, true, true, 1.0, babyWidth: 4.0 * 0.2375, babyHeight: 4.0 * 0.2375),
 
         // Minecarts: isPushable -> true but canBeCollidedWith stays false — the player walks through them.
         ["chest_minecart"] = new(0.98, 0.7, false, false),

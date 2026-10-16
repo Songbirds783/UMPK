@@ -203,6 +203,8 @@ public sealed class EntityScaleCollisionTests
         var entity = new Entity(42, Guid.NewGuid(), type, JavaGameData.EntityMetadataKeys(Protocol));
         store.Add(entity);
 
+        // Index 14 carries both semantics on the wire — is_baby for the AgeableMob chains, cube_size for
+        // AbstractCubeMob — but a single entity type only ever sends one, so these two arms never compose.
         if (baby)
             entity.Metadata.Set(14, MetadataValue.Boolean(true));
 
