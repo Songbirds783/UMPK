@@ -2,6 +2,10 @@
 
 This file records notable changes to UMPK.
 
+## 0.9.0-beta.7.3 - 2026-10-16
+
+- Collision boxes follow the baby life stage: the `is_baby` metadata bit (index 14, shared by `AgeableMob`/`Zombie`/`Piglin`/`Zoglin`) is decoded on protocol 755+, and the 36 types with an explicit vanilla `BABY_DIMENSIONS` use it (baby zombie 0.49x0.98, baby cow 0.45x0.7, ...); every other type halves its adult box, matching vanilla's default `getAgeScale`. Baby and scale compose multiplicatively as in vanilla; eras without the key read every entity as adult.
+
 ## 0.9.0-beta.7.2 - 2026-10-16
 
 - Size entity collision boxes by the server-synced `minecraft:scale` attribute (1.20.5+), clamped through vanilla's `sanitizeScale` bounds (ender dragon 1.0, happy ghast 1.0, shulker 3.0), so `/attribute` resize commands are collided with at their real size.
