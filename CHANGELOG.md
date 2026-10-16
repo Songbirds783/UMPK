@@ -1,6 +1,10 @@
-# Changelog
+﻿# Changelog
 
 This file records notable changes to UMPK.
+
+## 0.9.0-beta.7.1 - 2026-10-16
+
+- Add entity collision physics for the local-player engine: hard colliders (boats, shulkers, happy ghasts) block movement and nearby living entities push it, both transcribed from the vanilla 26.3 client and gated behind the new `ClientFeatures.EntityCollision` switch.
 
 ## 0.9.0-beta.7 - 2026-10-11
 

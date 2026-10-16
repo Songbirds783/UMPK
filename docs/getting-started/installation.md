@@ -1,4 +1,4 @@
----
+﻿---
 title: "Installation"
 description: "How to install UMPK from NuGet or reference a checkout, and which packages a client or status ping needs."
 sidebar:
@@ -16,14 +16,14 @@ Nothing else is required to build. The library's runtime dependencies are delibe
 Install the `Umpk` meta package when you want the complete client stack:
 
 ```bash
-dotnet add package Umpk --version 0.9.0-beta.7
+dotnet add package Umpk --version 0.9.0-beta.7.1
 ```
 
 Install a focused package when you only need one layer. For example, a status tool can start with the Java protocol package, while an NBT utility needs only the NBT package:
 
 ```bash
-dotnet add package Umpk.Protocol.Java --version 0.9.0-beta.7
-dotnet add package Umpk.Nbt --version 0.9.0-beta.7
+dotnet add package Umpk.Protocol.Java --version 0.9.0-beta.7.1
+dotnet add package Umpk.Nbt --version 0.9.0-beta.7.1
 ```
 
 All packages in one release use the same version. The project is pre-1.0, so pin that version rather than using a floating range.

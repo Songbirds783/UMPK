@@ -1,4 +1,4 @@
-# UMPK
+﻿# UMPK
 
 [![NuGet prerelease](https://img.shields.io/nuget/vpre/Umpk?style=flat-square&logo=nuget&label=NuGet&color=004880)](https://www.nuget.org/packages/Umpk) [![NuGet downloads](https://img.shields.io/nuget/dt/Umpk?style=flat-square&logo=nuget&label=downloads&color=004880)](https://www.nuget.org/packages/Umpk) [![Build status](https://img.shields.io/github/actions/workflow/status/MCCTeam/UMPK/pr.yml?branch=master&style=flat-square&logo=github&label=build)](https://github.com/MCCTeam/UMPK/actions/workflows/pr.yml) [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/10.0) [![C# 14](https://img.shields.io/badge/C%23-14-239120?style=flat-square&logo=csharp)](https://learn.microsoft.com/dotnet/csharp/) [![License: MIT](https://img.shields.io/github/license/MCCTeam/UMPK?style=flat-square&color=blue)](LICENSE)
 
@@ -55,7 +55,7 @@ Minecraft versions earlier than 1.8 are not supported. The legacy status ping ca
 Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0), then add the complete client stack:
 
 ```bash
-dotnet add package Umpk --version 0.9.0-beta.7
+dotnet add package Umpk --version 0.9.0-beta.7.1
 ```
 
 You can instead install focused packages such as `Umpk.Protocol.Java`, `Umpk.Nbt`, or `Umpk.Text`. To build the source:

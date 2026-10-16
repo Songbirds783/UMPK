@@ -1,4 +1,4 @@
-name: Bug report
+﻿name: Bug report
 description: Report behavior that is wrong or inconsistent.
 title: "[Bug]: "
 labels:
@@ -13,7 +13,7 @@ body:
     attributes:
       label: UMPK version or commit
       description: Give the package version or full commit hash.
-      placeholder: 0.9.0-beta.7 or a full commit hash
+      placeholder: 0.9.0-beta.7.1 or a full commit hash
     validations:
       required: true
   - type: input
