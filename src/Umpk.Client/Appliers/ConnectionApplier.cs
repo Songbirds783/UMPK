@@ -64,7 +64,7 @@ internal sealed class ConnectionApplier : IApplier
                 context.DispatchConfigurationChannel(payload.Channel, payload.Data);
                 return true;
 
-            // 1.20.2+ registry data. Three registries are kept, and only three, because they are the three this client acts on: minecraft:dimension_type decides where every decoded chunk column lands, minecraft:chat_type decides how a 1.19+ chat body is composed into the line a consumer sees, and minecraft:enchantment is the only thing that can name the numeric holder id a 1.21+ enchantment component carries. From protocol 767 there is no built-in table to fall back on and an uninstalled one decodes every enchantment to an unbound handle). Every other registry in this packet is deliberately dropped rather than half-modelled; decoding one with no consumer would only move the drop one layer up. Claiming the packet either way keeps it from falling through the chain as unhandled.
+            // 1.20.2+ registry data. Four registries are kept, and only four, because they are the four this client acts on: minecraft:dimension_type decides where every decoded chunk column lands, minecraft:chat_type decides how a 1.19+ chat body is composed into the line a consumer sees, minecraft:enchantment is the only thing that can name the numeric holder id a 1.21+ enchantment component carries, and minecraft:worldgen/biome is the only thing that can name the bare palette id every chunk section's biome grid carries (World.GetBiome resolves them; without the install every position reads as the unbound entry). From protocol 767 there is no built-in table to fall back on and an uninstalled one decodes every enchantment to an unbound handle). Every other registry in this packet is deliberately dropped rather than half-modelled; decoding one with no consumer would only move the drop one layer up. Claiming the packet either way keeps it from falling through the chain as unhandled.
             case ClientboundConfigRegistryDataPacket registry:
                 if (registry.Registry == RegistryIds.DimensionType)
                     InstallServerRegistry(
@@ -78,6 +78,9 @@ internal sealed class ConnectionApplier : IApplier
 
                 else if (registry.Registry == RegistryIds.Enchantment)
                     InstallServerRegistry(Enchantments.FromPackedEntries(registry.Entries), context, required: true);
+
+                else if (registry.Registry == RegistryIds.Biome)
+                    InstallServerRegistry(Biomes.FromPackedEntries(registry.Entries), context, required: true);
 
                 return true;
 

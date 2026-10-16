@@ -800,7 +800,12 @@ public sealed class UmpkClient : IAsyncDisposable
 
         Game.World.DimensionState dimension = WorldFactory.CreateDimension(
             setup, registries, _settings.Version.Version.Protocol);
-        Game.Registries.Registry<Game.Registries.BiomeDefinition> biomes = WorldFactory.EmptyBiomes();
+
+        // The server's own biome table when it arrived (the config-phase registry_data install), the single-entry plains placeholder only when the session never saw one — chunk palettes then decode to the unbound entry and GetBiome cannot name them, which is the same honest-empty answer the pre-install client gave.
+        Game.Registries.Registry<Game.Registries.BiomeDefinition> biomes =
+            registries is not null && registries.Biomes.Count > 0
+                ? registries.Biomes
+                : WorldFactory.EmptyBiomes();
         var world = new Game.World.World(dimension, blockData, biomes);
         State.InstallWorld(world);
         _movementReadiness.Reset();
