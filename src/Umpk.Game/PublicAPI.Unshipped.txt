@@ -3132,3 +3132,4 @@ virtual Umpk.Game.Inventory.ClickAction.PrintMembers(System.Text.StringBuilder! 
 ~override Umpk.Game.Registries.BlockPushInfo.ToString() -> string
 ~override Umpk.Game.World.LightLevels.Equals(object obj) -> bool
 ~override Umpk.Game.World.LightLevels.ToString() -> string
+static readonly Umpk.Game.Entities.AttributeIds.Scale -> Umpk.Identifier

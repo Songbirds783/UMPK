@@ -327,10 +327,11 @@ static Umpk.Physics.EntityColliderCatalog.Default.get -> Umpk.Physics.EntityColl
 static Umpk.Physics.EntityColliderCatalog.Lookup(string! typeId) -> Umpk.Physics.EntityColliderInfo
 Umpk.Physics.EntityColliderInfo
 Umpk.Physics.EntityColliderInfo.EntityColliderInfo() -> void
-Umpk.Physics.EntityColliderInfo.EntityColliderInfo(double width, double height, bool hardCollider, bool living) -> void
+Umpk.Physics.EntityColliderInfo.EntityColliderInfo(double width, double height, bool hardCollider, bool living, double maxScale = Infinity) -> void
 Umpk.Physics.EntityColliderInfo.HardCollider.get -> bool
 Umpk.Physics.EntityColliderInfo.Height.get -> double
 Umpk.Physics.EntityColliderInfo.Living.get -> bool
+Umpk.Physics.EntityColliderInfo.MaxScale.get -> double
 Umpk.Physics.EntityColliderInfo.Width.get -> double
 Umpk.Physics.EntityPusher
 Umpk.Physics.EntityPusher.EntityPusher() -> void

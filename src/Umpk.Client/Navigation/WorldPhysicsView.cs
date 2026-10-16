@@ -22,7 +22,7 @@ internal sealed class WorldPhysicsView(
 
     public bool IsChunkLoaded(BlockPos pos) => _world.GetColumn(pos) is not null;
 
-    /// <summary>Vanilla <c>canBeCollidedWith</c> entities — boats, shulkers, happy ghasts — whose standing box overlaps the sweep region become hard colliders. Sizes come from <see cref="EntityColliderCatalog"/> (vanilla 26.3 hand data), not the registry, which only knows names.</summary>
+    /// <summary>Vanilla <c>canBeCollidedWith</c> entities — boats, shulkers, happy ghasts — whose standing box overlaps the sweep region become hard colliders. Sizes come from <see cref="EntityColliderCatalog"/> (vanilla 26.3 hand data), not the registry, which only knows names, and are multiplied by the entity's tracked <c>minecraft:scale</c> attribute clamped through the type's vanilla <c>sanitizeScale</c> bound, so command-resized entities collide at their real size.</summary>
     public void CollectEntityColliders(in Aabb region, ICollection<Aabb> into)
     {
         if (_entities?.Invoke() is not { } store)
@@ -34,13 +34,14 @@ internal sealed class WorldPhysicsView(
             if (!info.HardCollider)
                 continue;
 
-            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, info.Width, info.Height);
+            double scale = EffectiveScale(entity, info);
+            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, info.Width * scale, info.Height * scale);
             if (box.Intersects(region))
                 into.Add(box);
         }
     }
 
-    /// <summary>Vanilla client semantics, mirrored from <c>ClientLevel.getPushableEntities</c>: only the LOCAL player is ever a push target, and the pushers are exactly the entities whose own client tick runs <c>LivingEntity.aiStep</c> — living entities. Non-living types (items, projectiles, boats) never initiate a push; hard colliders don't need to because their boxes can't overlap a body that collision keeps out.</summary>
+    /// <summary>Vanilla client semantics, mirrored from <c>ClientLevel.getPushableEntities</c>: only the LOCAL player is ever a push target, and the pushers are exactly the entities whose own client tick runs <c>LivingEntity.aiStep</c> — living entities. Non-living types (items, projectiles, boats) never initiate a push; hard colliders don't need to because their boxes can't overlap a body that collision keeps out. Pusher reach uses the scaled box for the same reason.</summary>
     public void CollectEntityPushers(in Aabb playerBox, ICollection<EntityPusher> into)
     {
         if (_entities?.Invoke() is not { } store)
@@ -52,9 +53,18 @@ internal sealed class WorldPhysicsView(
             if (!info.Living)
                 continue;
 
-            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, info.Width, info.Height);
+            double scale = EffectiveScale(entity, info);
+            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, info.Width * scale, info.Height * scale);
             if (box.Intersects(playerBox))
                 into.Add(new EntityPusher(entity.Position.X, entity.Position.Z));
         }
+    }
+
+    /// <summary>Vanilla 26.3 <c>LivingEntity.getScale()</c>: the server-synced <c>minecraft:scale</c> attribute value clamped through the type's <c>sanitizeScale</c> override. The attribute arrives via <c>update_attributes</c> on 1.20.5+ servers; an entity that was never sent one keeps vanilla's default of 1.0. <c>getAgeScale</c> (baby 0.5) is not applied — the baby bit lives in AgeableMob metadata this client does not decode, and the catalog documents the adult-box approximation.</summary>
+    private static double EffectiveScale(Entity entity, EntityColliderInfo info)
+    {
+        return entity.Attributes.TryGet(AttributeIds.Scale, out AttributeInstance instance)
+            ? Math.Min(instance.Value, info.MaxScale)
+            : Math.Min(1.0, info.MaxScale);
     }
 }

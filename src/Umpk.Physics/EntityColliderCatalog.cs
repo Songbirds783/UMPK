@@ -7,7 +7,8 @@ namespace Umpk.Physics;
 /// <param name="height">Bounding-box height in blocks.</param>
 /// <param name="hardCollider">Whether the type blocks movement the way a block does — vanilla <c>canBeCollidedWith</c>: boats and rafts always, shulkers and happy ghasts while alive.</param>
 /// <param name="living">Whether the type ticks <c>LivingEntity.aiStep</c>, which is the client-side source of entity push: only living entities initiate a push against the local player.</param>
-public readonly struct EntityColliderInfo(double width, double height, bool hardCollider, bool living)
+/// <param name="maxScale">Upper bound the type clamps its <c>minecraft:scale</c> attribute to — vanilla's <c>sanitizeScale</c> overrides: ender dragon forces 1.0, happy ghast clamps to 1.0, shulker clamps to 3.0, every other type is unlimited.</param>
+public readonly struct EntityColliderInfo(double width, double height, bool hardCollider, bool living, double maxScale = double.PositiveInfinity)
 {
     /// <summary>Bounding-box width in blocks.</summary>
     public double Width { get; } = width;
@@ -20,6 +21,9 @@ public readonly struct EntityColliderInfo(double width, double height, bool hard
 
     /// <summary>Whether the type ticks <c>LivingEntity.aiStep</c> and therefore initiates client-side entity push.</summary>
     public bool Living { get; } = living;
+
+    /// <summary>Upper bound the type clamps its scale attribute to (vanilla <c>sanitizeScale</c>); <see cref="double.PositiveInfinity"/> means vanilla applies no clamp.</summary>
+    public double MaxScale { get; } = maxScale;
 }
 
 /// <summary>Hand-curated entity bounding-box sizes and collision behavior, transcribed from the vanilla 26.3 client sources (<c>net.minecraft.world.entity.EntityTypes</c> builder calls plus the <c>canBeCollidedWith</c>/<c>aiStep</c> overrides).
@@ -28,7 +32,9 @@ public readonly struct EntityColliderInfo(double width, double height, bool hard
 ///
 /// <para>Keyed by the bare registry path (<c>minecraft:zombie</c> and <c>zombie</c> both resolve), so a modded namespace that reuses a vanilla path gets the vanilla shape — harmless for physics, where a mis-sized box costs a fraction of a block of push or clearance.</para>
 ///
-/// <para>Known approximations, both accepted because the client has no server-side entity state: shulker and happy-ghast hardness is per <c>isAlive</c> in vanilla but modeled as always hard (a dead one despawns within a tick or two), baby-animal scaling is ignored (standing adult box), and shulker peek/open states use the closed 1.0 box.</para></summary>
+/// <para>Scale support: vanilla 26.3 sizes every living entity's standing box as <c>typeDimensions x getAgeScale() x getScale()</c>, where <c>getScale()</c> reads the server-synced <c>minecraft:scale</c> attribute (1.20.5+, default 1.0) and clamps it through <c>sanitizeScale</c> — ender dragon forces 1.0, happy ghast clamps to 1.0, shulker clamps to 3.0. The consumer multiplies this table's width/height by the tracked entity's scale attribute clamped through <see cref="Umpk.Physics.EntityColliderInfo.MaxScale"/>, so a command-modified entity is collided with at its real size.</para>
+///
+/// <para>Known approximations, both accepted because the client has no server-side entity state: shulker and happy-ghast hardness is per <c>isAlive</c> in vanilla but modeled as always hard (a dead one despawns within a tick or two), baby-animal scaling is ignored (standing adult box; vanilla's <c>getAgeScale</c> halves it but the baby bit rides in AgeableMob metadata this client does not decode), and shulker peek/open states use the closed 1.0 box.</para></summary>
 public static class EntityColliderCatalog
 {
     /// <summary>The fallback for types missing from the table: the player-sized box, neither hard nor living.</summary>
@@ -61,8 +67,8 @@ public static class EntityColliderCatalog
         ["spruce_chest_boat"] = new(1.375, 0.5625, true, false),
 
         // Shulker (Shulker.canBeCollidedWith -> isAlive) and happy ghast (adult + alive; babies are untracked).
-        ["shulker"] = new(1.0, 1.0, true, true),
-        ["happy_ghast"] = new(4.0, 4.0, true, true),
+        ["shulker"] = new(1.0, 1.0, true, true, 3.0),
+        ["happy_ghast"] = new(4.0, 4.0, true, true, 1.0),
 
         // Minecarts: isPushable -> true but canBeCollidedWith stays false — the player walks through them.
         ["chest_minecart"] = new(0.98, 0.7, false, false),
@@ -98,7 +104,7 @@ public static class EntityColliderCatalog
         ["donkey"] = new(1.3964844, 1.5, false, true),
         ["drowned"] = new(0.6, 1.95, false, true),
         ["elder_guardian"] = new(1.9975, 1.9975, false, true),
-        ["ender_dragon"] = new(16.0, 8.0, false, true),
+        ["ender_dragon"] = new(16.0, 8.0, false, true, 1.0),
         ["enderman"] = new(0.6, 2.9, false, true),
         ["endermite"] = new(0.4, 0.3, false, true),
         ["evoker"] = new(0.6, 1.95, false, true),

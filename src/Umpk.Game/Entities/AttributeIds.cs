@@ -8,6 +8,9 @@ namespace Umpk.Game.Entities;
 /// </remarks>
 public static class AttributeIds
 {
+    /// <summary>The canonical id of the <c>minecraft:scale</c> attribute: vanilla's per-entity bounding-box multiplier, introduced at 1.20.5 as <c>generic.scale</c> and stripped to this form by 1.21.2's rename. Protocols 766-767 store instances under <c>minecraft:generic.scale</c>; <see cref="Canonical"/> folds both onto this id, so a single lookup serves every era that has the attribute at all (47-765 never do — those servers still hard-code entity sizes).</summary>
+    public static readonly Identifier Scale = new Identifier("minecraft", "scale");
+
     /// <summary>The four category segments vanilla stripped at 1.21.2. Order does not matter: no attribute name begins with two of them.</summary>
     private static readonly string[] CategoryPrefixes = ["generic.", "player.", "zombie.", "horse."];
 

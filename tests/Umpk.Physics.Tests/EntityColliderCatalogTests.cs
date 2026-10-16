@@ -77,4 +77,15 @@ public sealed class EntityColliderCatalogTests
         Assert.False(fallback.HardCollider);
         Assert.False(fallback.Living);
     }
+
+    [Fact]
+    public void SanitizeBounds_MatchVanillaOverrides()
+    {
+        // F26.3 sanitizeScale overrides: Shulker clamps to MAX_SCALE 3.0, HappyGhast to 1.0, EnderDragon forces 1.0; everything else is unlimited.
+        Assert.Equal(3.0, EntityColliderCatalog.Lookup("shulker").MaxScale, 6);
+        Assert.Equal(1.0, EntityColliderCatalog.Lookup("happy_ghast").MaxScale, 6);
+        Assert.Equal(1.0, EntityColliderCatalog.Lookup("ender_dragon").MaxScale, 6);
+        Assert.Equal(double.PositiveInfinity, EntityColliderCatalog.Lookup("zombie").MaxScale);
+        Assert.Equal(double.PositiveInfinity, EntityColliderCatalog.Default.MaxScale);
+    }
 }
