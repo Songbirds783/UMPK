@@ -86,8 +86,64 @@ public sealed class EntityScaleCollisionTests
         Assert.Single(inReach);
     }
 
+    [Fact]
+    public void BabyZombie_UsesExplicitBabyBox()
+    {
+        // Baby zombies ride the 0.49x0.98 BABY_DIMENSIONS, so their push reach ends at x=0.245: a player
+        // at [0.27, 0.87] is out of reach, while the adult 0.6-wide box (reach 0.3) still touches it.
+        (WorldPhysicsView babyView, _, _) = BuildViewWith("zombie", scale: null, baby: true);
+        var babyPushers = new List<EntityPusher>();
+        babyView.CollectEntityPushers(Aabb.OfSize(0.57, 0.0, 0.0, 0.6, 1.8), babyPushers);
+        Assert.Empty(babyPushers);
+
+        (WorldPhysicsView adultView, _, _) = BuildViewWith("zombie", scale: null);
+        var adultPushers = new List<EntityPusher>();
+        adultView.CollectEntityPushers(Aabb.OfSize(0.57, 0.0, 0.0, 0.6, 1.8), adultPushers);
+        Assert.Single(adultPushers);
+    }
+
+    [Fact]
+    public void BabyBoxes_ExplicitOverridesAndHalfAdultFallback()
+    {
+        // Explicit: baby zombie is 0.49x0.98, not the 0.3x0.975 half-box the old uniform age scale gave.
+        var zombie = EntityColliderCatalog.Lookup("zombie");
+        Assert.Equal((0.49, 0.98), zombie.SizeFor(baby: true, scale: 1.0));
+
+        // Fallback: a donkey declares no BABY_DIMENSIONS, so its baby halves the adult box like vanilla's
+        // default getAgeScale does.
+        var donkey = EntityColliderCatalog.Lookup("donkey");
+        Assert.Equal((1.3964844 * 0.5, 1.5 * 0.5), donkey.SizeFor(baby: true, scale: 1.0));
+    }
+
+    [Fact]
+    public void BabyHappyGhast_CollidesAtBabySize()
+    {
+        // Happy ghast is the one hard collider with a tracked baby: the 4.0 box drops to the explicit
+        // 0.95x0.95 one (4.0 x 0.2375), and the scale-attribute clamp stays separate from the age term.
+        (WorldPhysicsView view, _, _) = BuildViewWith("happy_ghast", scale: null, baby: true);
+        var collected = new List<Aabb>();
+        view.CollectEntityColliders(Aabb.OfSize(0.3, 0.0, 0.0, 0.6, 1.8), collected);
+        Assert.Single(collected);
+        Assert.Equal(0.95, collected[0].XSize, 6);
+    }
+
+    [Fact]
+    public void BabyAndScale_ComposeMultiplicatively()
+    {
+        // Vanilla composes getAgeScale x getScale: a scale-2 baby horse pushes with half its adult
+        // reach — box radius 0.9775, versus 0.4888 for a scale-1 baby and 1.3965 for a scale-2 adult.
+        (WorldPhysicsView view, _, _) = BuildViewWith("horse", scale: 2.0, baby: true);
+        var inBabyReach = new List<EntityPusher>();
+        view.CollectEntityPushers(Aabb.OfSize(1.1, 0.0, 0.0, 0.6, 1.8), inBabyReach);
+        Assert.Single(inBabyReach);
+
+        var beyondBabyReach = new List<EntityPusher>();
+        view.CollectEntityPushers(Aabb.OfSize(1.6, 0.0, 0.0, 0.6, 1.8), beyondBabyReach);
+        Assert.Empty(beyondBabyReach);
+    }
+
     private static (WorldPhysicsView View, EntityStore Store, Entity Entity) BuildViewWith(
-        string typeId, double? scale)
+        string typeId, double? scale, bool baby = false)
     {
         Registry<BlockDefinition> blocks = JavaGameData.Registries(Protocol).Blocks;
         var data = new RegistryBlockDataSource(blocks, isLegacy: false);
@@ -104,8 +160,11 @@ public sealed class EntityScaleCollisionTests
             1,
             Identifier.Minecraft(typeId),
             new EntityTypeDefinition(0.6f, 1.8f));
-        var entity = new Entity(42, Guid.NewGuid(), type);
+        var entity = new Entity(42, Guid.NewGuid(), type, JavaGameData.EntityMetadataKeys(Protocol));
         store.Add(entity);
+
+        if (baby)
+            entity.Metadata.Set(14, MetadataValue.Boolean(true));
 
         if (scale is not null)
         {

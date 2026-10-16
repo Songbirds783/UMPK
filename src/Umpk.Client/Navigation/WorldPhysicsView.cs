@@ -22,7 +22,7 @@ internal sealed class WorldPhysicsView(
 
     public bool IsChunkLoaded(BlockPos pos) => _world.GetColumn(pos) is not null;
 
-    /// <summary>Vanilla <c>canBeCollidedWith</c> entities — boats, shulkers, happy ghasts — whose standing box overlaps the sweep region become hard colliders. Sizes come from <see cref="EntityColliderCatalog"/> (vanilla 26.3 hand data), not the registry, which only knows names, and are multiplied by the entity's tracked <c>minecraft:scale</c> attribute clamped through the type's vanilla <c>sanitizeScale</c> bound, so command-resized entities collide at their real size.</summary>
+    /// <summary>Vanilla <c>canBeCollidedWith</c> entities — boats, shulkers, happy ghasts — whose standing box overlaps the sweep region become hard colliders. Sizes come from <see cref="EntityColliderCatalog"/> (vanilla 26.3 hand data), not the registry, which only knows names, folded through <see cref="EntityColliderInfo.SizeFor"/> with the entity's baby bit and its tracked <c>minecraft:scale</c> attribute clamped through the type's vanilla <c>sanitizeScale</c> bound, so command-resized or baby entities collide at their real size.</summary>
     public void CollectEntityColliders(in Aabb region, ICollection<Aabb> into)
     {
         if (_entities?.Invoke() is not { } store)
@@ -35,7 +35,8 @@ internal sealed class WorldPhysicsView(
                 continue;
 
             double scale = EffectiveScale(entity, info);
-            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, info.Width * scale, info.Height * scale);
+            (double width, double height) = info.SizeFor(IsBaby(entity), scale);
+            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, width, height);
             if (box.Intersects(region))
                 into.Add(box);
         }
@@ -54,13 +55,18 @@ internal sealed class WorldPhysicsView(
                 continue;
 
             double scale = EffectiveScale(entity, info);
-            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, info.Width * scale, info.Height * scale);
+            (double width, double height) = info.SizeFor(IsBaby(entity), scale);
+            Aabb box = Aabb.OfSize(entity.Position.X, entity.Position.Y, entity.Position.Z, width, height);
             if (box.Intersects(playerBox))
                 into.Add(new EntityPusher(entity.Position.X, entity.Position.Z));
         }
     }
 
-    /// <summary>Vanilla 26.3 <c>LivingEntity.getScale()</c>: the server-synced <c>minecraft:scale</c> attribute value clamped through the type's <c>sanitizeScale</c> override. The attribute arrives via <c>update_attributes</c> on 1.20.5+ servers; an entity that was never sent one keeps vanilla's default of 1.0. <c>getAgeScale</c> (baby 0.5) is not applied — the baby bit lives in AgeableMob metadata this client does not decode, and the catalog documents the adult-box approximation.</summary>
+    /// <summary>The <c>is_baby</c> metadata bit (<c>AgeableMob</c>/<c>Zombie</c>/<c>Piglin</c>/<c>Zoglin</c>, index 14 on 755+). A tier-2 miss — no key source, unmapped era, absent value — reads as adult, which is exactly the pre-1.17 behaviour where no baby bit is ever sent.</summary>
+    private static bool IsBaby(Entity entity) =>
+        entity.Metadata.TryGet(EntityMetadataKeys.IsBaby, out bool baby) && baby;
+
+    /// <summary>Vanilla 26.3 <c>LivingEntity.getScale()</c>: the server-synced <c>minecraft:scale</c> attribute value clamped through the type's <c>sanitizeScale</c> override. The attribute arrives via <c>update_attributes</c> on 1.20.5+ servers; an entity that was never sent one keeps vanilla's default of 1.0. The baby stage is a separate term applied by <see cref="EntityColliderInfo.SizeFor"/>.</summary>
     private static double EffectiveScale(Entity entity, EntityColliderInfo info)
     {
         return entity.Attributes.TryGet(AttributeIds.Scale, out AttributeInstance instance)

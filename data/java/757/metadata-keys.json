@@ -4,7 +4,7 @@
     "protocol": 757,
     "mapping_source": "mojang-proguard",
     "kind": "curated",
-    "note": "tier-2 semantic metadata key indices; 1.17.1-decompiled net/minecraft/world/entity/Entity.java:186-202 (ticks-frozen at 7)"
+    "note": "tier-2 semantic metadata key indices; 1.17.1-decompiled net/minecraft/world/entity/Entity.java:186-202 (ticks-frozen at 7); is_baby 14 verified as the AgeableMob/Zombie/Piglin/Zoglin DATA_BABY_ID (Mob.DATA_MOB_FLAGS_ID 13, no fields on PathfinderMob/Monster/PiglinAbstract; F26.3 decompile)"
   },
   "entity_keys": {
     "shared_flags": 0,
@@ -18,7 +18,8 @@
     "health": 9,
     "effect_particles": 10,
     "effect_ambience": 11,
-    "arrow_count": 12
+    "arrow_count": 12,
+    "is_baby": 14
   },
   "item_entity_keys": {
     "carried_item": 8

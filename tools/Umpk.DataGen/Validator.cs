@@ -580,7 +580,7 @@ internal static partial class Validator
 
     private static readonly HashSet<string> KnownMetadataKeys =
     [
-        .. RequiredMetadataKeys, "no_gravity", "pose", "ticks_frozen",
+        .. RequiredMetadataKeys, "no_gravity", "pose", "ticks_frozen", "is_baby",
     ];
 
     /// <summary>

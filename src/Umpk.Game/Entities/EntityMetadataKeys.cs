@@ -43,4 +43,7 @@ public static class EntityMetadataKeys
 
     /// <summary>The item stack carried by a dropped-item entity.</summary>
     public static MetadataKey<IMetadataSlot?> CarriedItem { get; } = new("carried_item", v => v.AsSlot());
+
+    /// <summary>Whether the entity is in its baby life stage. Declared by <c>AgeableMob</c>, <c>Zombie</c>, <c>Piglin</c>, and <c>Zoglin</c> at the same index (1.17+); absent on older eras, where every entity then reads as adult.</summary>
+    public static MetadataKey<bool> IsBaby { get; } = new("is_baby", v => v.AsBoolean());
 }
