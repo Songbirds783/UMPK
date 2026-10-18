@@ -56,6 +56,9 @@ public sealed class Entity
     /// <summary>The current pose, mirrored from metadata when a semantic key resolves it.</summary>
     public EntityPose Pose { get; set; } = EntityPose.Standing;
 
+    /// <summary>The villager type/profession/level triple, mirrored from metadata when present. Only villagers (and zombie villagers) carry the field; everyone else reads null.</summary>
+    public VillagerData? VillagerData { get; set; }
+
     /// <summary>The custom display name, if any.</summary>
     public Component? CustomName { get; set; }
 

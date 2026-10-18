@@ -260,6 +260,12 @@ Umpk.Game.Entities.Entity.PlayerProfile.get -> Umpk.GameProfile?
 Umpk.Game.Entities.Entity.PlayerProfile.set -> void
 Umpk.Game.Entities.Entity.Pose.get -> Umpk.Game.Entities.EntityPose
 Umpk.Game.Entities.Entity.Pose.set -> void
+Umpk.Game.Entities.Entity.VillagerData.get -> Umpk.Game.Entities.VillagerData?
+Umpk.Game.Entities.Entity.VillagerData.set -> void
+Umpk.Game.Entities.EntityMetadata.TryGetVillagerData(out Umpk.Game.Entities.VillagerData data) -> bool
+Umpk.Game.Entities.VillagerDataNames
+static Umpk.Game.Entities.VillagerDataNames.ProfessionName(int id) -> string?
+static Umpk.Game.Entities.VillagerDataNames.TypeName(int id) -> string?
 Umpk.Game.Entities.Entity.Position.get -> Umpk.Geometry.Vec3d
 Umpk.Game.Entities.Entity.Position.set -> void
 Umpk.Game.Entities.Entity.RemoveEffect(int effectNetworkId) -> bool

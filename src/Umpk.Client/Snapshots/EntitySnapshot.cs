@@ -42,6 +42,9 @@ public sealed record EntitySnapshot(
     int? VehicleId,
     ItemStack? CarriedItem = null)
 {
+    /// <summary>The villager identity carried in metadata, or null for every non-villager entity (zombie villagers included in the non-null case).</summary>
+    public VillagerSnapshot? Villager { get; init; }
+
     /// <summary>Projects an <see cref="EntitySnapshot"/> from a live tracked entity. Pure; no session loop involved.</summary>
     /// <exception cref="ArgumentNullException"><paramref name="entity"/> is null.</exception>
     public static EntitySnapshot Project(Entity entity)
@@ -60,6 +63,13 @@ public sealed record EntitySnapshot(
         foreach (Entity passenger in entity.Passengers)
             passengers.Add(passenger.Id);
 
+        VillagerSnapshot? villager = entity.VillagerData is { } data
+            ? new VillagerSnapshot(
+                VillagerDataNames.TypeName(data.Type),
+                VillagerDataNames.ProfessionName(data.Profession),
+                data.Level)
+            : null;
+
         return new EntitySnapshot(
             entity.Id,
             entity.Uuid,
@@ -77,6 +87,15 @@ public sealed record EntitySnapshot(
             effects,
             passengers,
             entity.Vehicle?.Id,
-            entity.CarriedItem as ItemStack);
+            entity.CarriedItem as ItemStack)
+        {
+            Villager = villager,
+        };
     }
 }
+
+/// <summary>The villager identity from entity metadata, with the network ids resolved against vanilla's built-in tables.</summary>
+/// <param name="TypeId">The villager type (the biome variant), for example <c>minecraft:plains</c>; null when the server reported an id outside the known table (a newer vanilla than this build).</param>
+/// <param name="ProfessionId">The profession, for example <c>minecraft:farmer</c>; null when out of the known table.</param>
+/// <param name="Level">The trading tier, 1-5 (novice through master).</param>
+public sealed record VillagerSnapshot(string? TypeId, string? ProfessionId, int Level);

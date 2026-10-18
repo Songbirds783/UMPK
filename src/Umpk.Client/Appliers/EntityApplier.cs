@@ -327,6 +327,10 @@ internal sealed class EntityApplier : IApplier
         if (entity.Metadata.TryGet(EntityMetadataKeys.Pose, out EntityPose pose))
             entity.Pose = pose;
 
+        entity.VillagerData = entity.Metadata.TryGetVillagerData(out VillagerData villager)
+            ? villager
+            : null;
+
         if (entity.Metadata.TryGet(EntityMetadataKeys.CarriedItem, out IMetadataSlot? carried))
             entity.CarriedItem = carried is { IsEmpty: false } ? carried : null;
 

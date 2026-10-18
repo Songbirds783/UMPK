@@ -67,6 +67,22 @@ public sealed class EntityMetadata
             && _values.TryGetValue(index, out value);
     }
 
+    /// <summary>Reads the villager-data field by value kind rather than by semantic key: only the villager family (and zombie villagers, who remember their profession through a cure) carries the villager-data serializer, so the kind alone identifies the entry on every supported protocol without a per-version index table.</summary>
+    public bool TryGetVillagerData(out VillagerData data)
+    {
+        foreach (KeyValuePair<int, MetadataValue> pair in _values)
+        {
+            if (pair.Value.Kind is MetadataValueKind.VillagerData)
+            {
+                data = pair.Value.AsVillagerData();
+                return true;
+            }
+        }
+
+        data = default;
+        return false;
+    }
+
     /// <summary>Tier-2 read: resolves <paramref name="key"/> for the owning entity type through the bound key source, reads the tier-1 value at the resolved index, and projects it. Returns false (with <paramref name="value"/> set to default) when no source is bound, the key is unmapped for this entity type, the resolved index is absent, or the projection throws <see cref="InvalidOperationException"/> because the stored kind does not match the key.</summary>
     public bool TryGet<T>(MetadataKey<T> key, out T value)
     {

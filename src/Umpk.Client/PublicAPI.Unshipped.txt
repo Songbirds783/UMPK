@@ -2483,6 +2483,24 @@ Umpk.Client.Snapshots.EntitySnapshot.CarriedItem.get -> Umpk.Game.Items.ItemStac
 Umpk.Client.Snapshots.EntitySnapshot.CarriedItem.init -> void
 Umpk.Client.Snapshots.EntitySnapshot.Deconstruct(out int Id, out System.Guid Uuid, out Umpk.Identifier TypeId, out Umpk.Geometry.Vec3d Position, out Umpk.Geometry.Vec3d Velocity, out float Yaw, out float Pitch, out float HeadYaw, out bool OnGround, out Umpk.Game.Entities.EntityPose Pose, out Umpk.Text.Component? CustomName, out string? PlayerName, out System.Collections.Generic.IReadOnlyDictionary<Umpk.Game.Entities.EquipmentSlot, Umpk.Game.Items.ItemStack!>! Equipment, out System.Collections.Generic.IReadOnlyList<Umpk.Client.Snapshots.EffectSnapshot!>! Effects, out System.Collections.Generic.IReadOnlyList<int>! PassengerIds, out int? VehicleId, out Umpk.Game.Items.ItemStack? CarriedItem) -> void
 Umpk.Client.Snapshots.EntitySnapshot.EntitySnapshot(int Id, System.Guid Uuid, Umpk.Identifier TypeId, Umpk.Geometry.Vec3d Position, Umpk.Geometry.Vec3d Velocity, float Yaw, float Pitch, float HeadYaw, bool OnGround, Umpk.Game.Entities.EntityPose Pose, Umpk.Text.Component? CustomName, string? PlayerName, System.Collections.Generic.IReadOnlyDictionary<Umpk.Game.Entities.EquipmentSlot, Umpk.Game.Items.ItemStack!>! Equipment, System.Collections.Generic.IReadOnlyList<Umpk.Client.Snapshots.EffectSnapshot!>! Effects, System.Collections.Generic.IReadOnlyList<int>! PassengerIds, int? VehicleId, Umpk.Game.Items.ItemStack? CarriedItem = null) -> void
+Umpk.Client.Snapshots.EntitySnapshot.Villager.get -> Umpk.Client.Snapshots.VillagerSnapshot?
+Umpk.Client.Snapshots.EntitySnapshot.Villager.init -> void
+Umpk.Client.Snapshots.VillagerSnapshot
+Umpk.Client.Snapshots.VillagerSnapshot.<Clone>$() -> Umpk.Client.Snapshots.VillagerSnapshot!
+Umpk.Client.Snapshots.VillagerSnapshot.Deconstruct(out string? TypeId, out string? ProfessionId, out int Level) -> void
+Umpk.Client.Snapshots.VillagerSnapshot.Equals(Umpk.Client.Snapshots.VillagerSnapshot? other) -> bool
+override Umpk.Client.Snapshots.VillagerSnapshot.Equals(object? obj) -> bool
+override Umpk.Client.Snapshots.VillagerSnapshot.GetHashCode() -> int
+Umpk.Client.Snapshots.VillagerSnapshot.Level.get -> int
+Umpk.Client.Snapshots.VillagerSnapshot.Level.init -> void
+Umpk.Client.Snapshots.VillagerSnapshot.ProfessionId.get -> string?
+Umpk.Client.Snapshots.VillagerSnapshot.ProfessionId.init -> void
+override Umpk.Client.Snapshots.VillagerSnapshot.ToString() -> string!
+Umpk.Client.Snapshots.VillagerSnapshot.TypeId.get -> string?
+Umpk.Client.Snapshots.VillagerSnapshot.TypeId.init -> void
+Umpk.Client.Snapshots.VillagerSnapshot.VillagerSnapshot(string? TypeId, string? ProfessionId, int Level) -> void
+static Umpk.Client.Snapshots.VillagerSnapshot.operator !=(Umpk.Client.Snapshots.VillagerSnapshot? left, Umpk.Client.Snapshots.VillagerSnapshot? right) -> bool
+static Umpk.Client.Snapshots.VillagerSnapshot.operator ==(Umpk.Client.Snapshots.VillagerSnapshot? left, Umpk.Client.Snapshots.VillagerSnapshot? right) -> bool
 Umpk.Client.Snapshots.WeatherSnapshot
 Umpk.Client.Snapshots.WeatherSnapshot.<Clone>$() -> Umpk.Client.Snapshots.WeatherSnapshot!
 Umpk.Client.Snapshots.WeatherSnapshot.Deconstruct(out float RainLevel, out float ThunderLevel, out bool IsRaining) -> void
