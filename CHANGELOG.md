@@ -2,6 +2,10 @@
 
 This file records notable changes to UMPK.
 
+## 0.9.0-beta.7.5.3 - 2026-10-20
+
+- The enchantment registry's definition parser lifts the automation fields beyond `max_level`: `anvil_cost` (vanilla's old rarity multiplier), both enchanting-table cost curves (`min_cost`/`max_cost`, read as `base` + `per_level_above_first`), and the raw `exclusive_set` holder-set references (plain ids and `#tag` strings, left unexpanded — expanding tags stays the tags update's job). `EnchantmentDefinition` grows `AnvilCost`/`MinCost`/`MaxCost`/`ExclusiveSet` plus a new `EnchantmentCost` record, elided known-pack entries keep falling back per member, and the remaining definition fields (description, items, weight, slots, effects) stay unmodelled for want of a consumer.
+
 ## 0.9.0-beta.7.5.1 - 2026-10-16
 
 - Install the server's `minecraft:worldgen/biome` registry during configuration: the registry_data packet's biome entries were deliberately dropped as consumerless, but `World.GetBiome` IS the consumer and the world was built over a hardcoded single-entry plains placeholder, so every position decoded a biome palette id that resolved to a guess or to nothing. The install is identity-only (the name-to-id mapping is the whole value; the definition fields stay unmodelled), elided known-pack entries keep their slot, and `SetupWorld` now prefers the server's table over the placeholder. Consumers resolve chunk palettes into named entries through `World.GetBiome` — on 1.20.5+ (protocol 766+) servers; the 764/765 combined NBT blob and older join-game registry paths stay unwritten, so those eras keep the placeholder table. The test-count baseline also catches up on the entity-scale cases the last four bumps forgot to record.
