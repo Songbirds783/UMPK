@@ -92,6 +92,21 @@ internal sealed class ConnectionApplier : IApplier
                     ChatTypes.FromJoinGameRegistry(blob.Registries, context.Version.Features.ComponentEra), context);
                 return true;
 
+            // 1.20.2+ tag sync, DUAL-PHASE since introduction (764: config 8, play 112→8; 777: config 14, play 137):
+            // vanilla sends it at the end of configuration AND re-sends mid-session from play (dimension switch,
+            // datapack reload). Only the minecraft:enchantment arm is kept: tags are the missing half of the
+            // enchantment registry — an exclusive_set reference is a #tag id that means nothing until the members
+            // are known. Members arrive as numeric ids and resolve against the already-installed enchantment
+            // registry; if that registry is absent the tags cannot be named and the payload is dropped rather
+            // than stored as numbers. Claimed either way.
+            case ClientboundConfigUpdateTagsPacket tags:
+                if (context.State.Registries?.Enchantments is { } enchantments
+                    && EnchantmentTags.FromPacket(tags, enchantments) is { } enchantmentTags)
+                {
+                    context.State.EnchantmentTags = enchantmentTags;
+                }
+                return true;
+
             case ClientboundServerDataPacket data:
                 context.State.Self.EnforcesSecureChat |= false;
                 await context.PublishAsync(new ServerDataReceived(data.Motd, data.IconBytes is not null)).ConfigureAwait(false);

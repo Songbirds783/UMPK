@@ -319,6 +319,11 @@ public static class JavaClientLogin
             ? -1
             : WireIdOf(configIn, Identifier.Minecraft("registry_data"));
 
+        // Tag sync shares the registry_data story: from 764 the configuration phase carries minecraft:update_tags, and consuming it silently is what left the enchantment registry's tag references (exclusive_set and friends) permanently unresolved. Configuration is not merely one of two deliveries here - modern servers no longer resend tags from play at all, so this loop is the ONLY chance to see them. Surfaced through the same observer the registries already use; decoding is not applying, and Umpk.Client decides which registries' tags it keeps.
+        int updateTagsId = options.PacketObserver is null
+            ? -1
+            : WireIdOf(configIn, Identifier.Minecraft("update_tags"));
+
         // Send client information immediately so the server can proceed. Skipped on a play-to-configuration re-entry, where vanilla's client sends the acknowledgement and nothing else: see JavaConfigurationOptions.AnnounceClientInformation. Brand BEFORE client information, which is the order vanilla sends them in; see JavaConfigurationOptions.AnnounceBrand.
         if (options.AnnounceBrand is { } clientBrand)
             await SendAsync(connection, descriptor, ProtocolPhase.Configuration,
@@ -383,6 +388,7 @@ public static class JavaClientLogin
                 || (frame.WireId == clearDialogId && clearDialogId >= 0)
                 || (frame.WireId == customPayloadId && customPayloadId >= 0)
                 || (frame.WireId == registryDataId && registryDataId >= 0)
+                || (frame.WireId == updateTagsId && updateTagsId >= 0)
                 || (frame.WireId == transferId && transferId >= 0)
                 || (frame.WireId == resourcePackPushId && resourcePackPushId >= 0))
             {
@@ -413,7 +419,7 @@ public static class JavaClientLogin
             else if (frame.WireId == disconnectId && disconnectId >= 0)
                 throw await ConfigurationKickAsync(connection, configIn, options, frame, ct).ConfigureAwait(false);
 
-            // update_tags, resource-pack pushes, etc. are consumed and ignored; the offline reach-play driver only needs to stay in sync. registry_data is no longer in that list: it is surfaced above so Umpk.Client can keep the registries it needs.
+            // Feature changes and the remaining configuration traffic are consumed and ignored; the offline reach-play driver only needs to stay in sync. registry_data and update_tags are no longer in that list: both are surfaced above so Umpk.Client can keep the registries and their tags it needs.
         }
 
         throw new ConnectionClosedException(CloseReason.SocketEof, "Server closed during configuration.");

@@ -45,6 +45,14 @@ public sealed class ClientState
     /// <summary>The network-synced registries. Populated during configuration.</summary>
     public RegistryAccess? Registries { get; internal set; }
 
+    /// <summary>
+    /// The server's <c>minecraft:enchantment</c> tags from the update-tags packet (dual-phase: configuration AND play since 1.20.2),
+    /// keyed by tag id with the members resolved from numeric ids into enchantment ids via the synced registry.
+    /// Populated when the packet arrives after the enchantment registry; null until then. This is what turns an
+    /// enchantment's <c>#tag</c> exclusive-set references into concrete conflicting enchantments.
+    /// </summary>
+    public IReadOnlyDictionary<Identifier, IReadOnlyList<Identifier>>? EnchantmentTags { get; internal set; }
+
     /// <summary>The scoreboard/teams model. Always present.</summary>
     public Scoreboard Scoreboard { get; } = new();
 

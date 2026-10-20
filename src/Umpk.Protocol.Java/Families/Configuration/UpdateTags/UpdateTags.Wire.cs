@@ -55,7 +55,7 @@ public static partial class ConfigurationCodecs
             static (ref PacketReader r, PacketCodecContext _) =>
                 new ClientboundConfigUpdateTagsPacket(r.ReadList(ReadTagRegistry)));
 
-    /// <summary>Adds this packet's timelines to the binding table.</summary>
+    /// <summary>Adds this packet's timelines to the binding table. Only the CONFIGURATION phase binds a codec: on 26.3 reality (purrland capture) the server sends tags exactly once, at configuration wire 14, and never at play wire 137 — the play slot stays the upstream-declared KnownGap marker.</summary>
     internal static void DeclareUpdateTags(PacketBindings bindings)
     {
         bindings.Packet(LoginFamilyPackets.Config.UpdateTags)

@@ -217,6 +217,7 @@ Umpk.Client.ClientState.IsLocalChunkLoaded.get -> bool
 Umpk.Client.ClientState.Maps.get -> Umpk.Game.Players.MapState!
 Umpk.Client.ClientState.ObservedLatency.get -> int?
 Umpk.Client.ClientState.Recipes.get -> Umpk.Client.State.RecipeState!
+Umpk.Client.ClientState.EnchantmentTags.get -> System.Collections.Generic.IReadOnlyDictionary<Umpk.Identifier, System.Collections.Generic.IReadOnlyList<Umpk.Identifier>!>?
 Umpk.Client.ClientState.Registries.get -> Umpk.Game.Registries.RegistryAccess?
 Umpk.Client.ClientState.Scoreboard.get -> Umpk.Game.Scoreboard.Scoreboard!
 Umpk.Client.ClientState.Self.get -> Umpk.Client.State.SelfState!
