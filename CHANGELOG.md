@@ -4,7 +4,7 @@ This file records notable changes to UMPK.
 
 ## 0.9.0-beta.7.5.3 - 2026-10-20
 
-- The enchantment registry's definition parser lifts the automation fields beyond `max_level`: `anvil_cost` (vanilla's old rarity multiplier), both enchanting-table cost curves (`min_cost`/`max_cost`, read as `base` + `per_level_above_first`), and the raw `exclusive_set` holder-set references (plain ids and `#tag` strings, left unexpanded — expanding tags stays the tags update's job). `EnchantmentDefinition` grows `AnvilCost`/`MinCost`/`MaxCost`/`ExclusiveSet` plus a new `EnchantmentCost` record, elided known-pack entries keep falling back per member, and the remaining definition fields (description, items, weight, slots, effects) stay unmodelled for want of a consumer.
+- The enchantment registry's definition parser lifts the automation fields beyond `max_level`: `anvil_cost` (vanilla's old rarity multiplier), both enchanting-table cost curves (`min_cost`/`max_cost`, read as `base` + `per_level_above_first`), the raw `exclusive_set` holder-set references (plain ids and `#tag` strings, left unexpanded — expanding tags stays the tags update's job), the weighted-random draw `weight` (clamped to the codec's 1-1024 range), and the display name extracted from `description` (its `translate` key — every vanilla enchantment — or literal `text`). `EnchantmentDefinition` grows `AnvilCost`/`MinCost`/`MaxCost`/`ExclusiveSet`/`Weight`/`Description` plus a new `EnchantmentCost` record, elided known-pack entries keep falling back per member, and the remaining definition fields (items, slots, the effect tree) stay unmodelled for want of a consumer.
 
 ## 0.9.0-beta.7.5.1 - 2026-10-16
 

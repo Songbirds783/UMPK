@@ -138,12 +138,16 @@ public sealed record ChatTypeDefinition(ChatDecorationDefinition? Chat);
 /// <param name="MinCost">The enchanting table's minimum cost curve at a given level: <c>base + per-level × (level − 1)</c>. Null when the entry carried none.</param>
 /// <param name="MaxCost">The enchanting table's maximum cost curve, same shape. Null when the entry carried none.</param>
 /// <param name="ExclusiveSet">Enchantments this one cannot coexist with, as the raw holder-set references the server sent: plain ids and <c>#tag</c> references. Null when absent. Tags are not expanded here — resolve them against the tags update before testing conflicts.</param>
+/// <param name="Weight">The weighted-random draw weight loot sources (enchanting table rolls, villager books, fishing) give this enchantment — vanilla's rarity in frequency terms: protection 10, mending 2, silk touch 1.</param>
+/// <param name="Description">The display name the server sent: the <c>translate</c> key for text-component descriptions (every vanilla enchantment, e.g. <c>enchantment.minecraft.protection</c>) or the literal text for plain ones. Null when absent or shaped unrecognizably.</param>
 public sealed record EnchantmentDefinition(
     int MaxLevel = 1,
     int AnvilCost = 0,
     EnchantmentCost? MinCost = null,
     EnchantmentCost? MaxCost = null,
-    IReadOnlyList<string>? ExclusiveSet = null);
+    IReadOnlyList<string>? ExclusiveSet = null,
+    int Weight = 1,
+    string? Description = null);
 
 /// <summary>The two-point linear cost curve an enchanting table rolls levels with.</summary>
 /// <param name="Base">The cost at level I.</param>

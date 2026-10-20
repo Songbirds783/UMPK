@@ -100,7 +100,7 @@ public sealed class EnchantmentRegistryInstallTests
         Assert.Equal(1, sharp!.MaxLevel);
     }
 
-    /// <summary>The automation fields beyond <c>max_level</c> — anvil cost, both table-cost curves and the raw exclusive-set references — are lifted verbatim, tags left unexpanded with their <c>#</c> prefix. An entry carrying none of them falls back per member rather than inventing values.</summary>
+    /// <summary>The automation fields beyond <c>max_level</c> — anvil cost, both table-cost curves, the raw exclusive-set references, the draw weight and the display-name translate key — are lifted verbatim, tags left unexpanded with their <c>#</c> prefix. An entry carrying none of them falls back per member rather than inventing values.</summary>
     [Fact]
     public async Task TheAutomationFields_AreReadVerbatimAndDefaultedPerMember()
     {
@@ -113,6 +113,8 @@ public sealed class EnchantmentRegistryInstallTests
             ["min_cost"] = new NbtCompound { ["base"] = new NbtInt(1), ["per_level_above_first"] = new NbtInt(11) },
             ["max_cost"] = new NbtCompound { ["base"] = new NbtInt(21), ["per_level_above_first"] = new NbtInt(11) },
             ["exclusive_set"] = new NbtString("#minecraft:exclusive_set/sword"),
+            ["weight"] = new NbtInt(10),
+            ["description"] = new NbtCompound { ["translate"] = new NbtString("enchantment.minecraft.sharpness") },
         };
         await harness.ApplyAsync(RegistryData(
             new PackedRegistryEntry(Sharpness, sharpness),
@@ -125,6 +127,8 @@ public sealed class EnchantmentRegistryInstallTests
         Assert.Equal(new EnchantmentCost(1, 11), read.MinCost);
         Assert.Equal(new EnchantmentCost(21, 11), read.MaxCost);
         Assert.Equal(new[] { "#minecraft:exclusive_set/sword" }, read.ExclusiveSet);
+        Assert.Equal(10, read.Weight);
+        Assert.Equal("enchantment.minecraft.sharpness", read.Description);
 
         Assert.True(enchantments.TryGetValue(Identifier.Minecraft("efficiency"), out EnchantmentDefinition? bare));
         Assert.Equal(5, bare!.MaxLevel);
@@ -132,6 +136,8 @@ public sealed class EnchantmentRegistryInstallTests
         Assert.Null(bare.MinCost);
         Assert.Null(bare.MaxCost);
         Assert.Null(bare.ExclusiveSet);
+        Assert.Equal(1, bare.Weight);
+        Assert.Null(bare.Description);
     }
 
     /// <summary>The control: every OTHER registry in this packet is still deliberately dropped. Without this, a change that installed whatever arrived would pass every case above.</summary>

@@ -7,7 +7,7 @@ namespace Umpk.Client.Internal;
 /// <summary>Turns the server's own <c>minecraft:enchantment</c> data into a <see cref="Registry{T}"/> of <see cref="EnchantmentDefinition"/>.</summary>
 /// <remarks>
 /// <para>One wire shape only: the 1.20.5+ configuration-phase <c>registry_data</c> packet, entries in network-id order. The registry became synchronized data in 1.21, while 1.20.6 does not carry it. So there is no 764/765 NBT-blob arm and no join-game arm to write: on those protocols the server never sends this registry, and <c>JavaGameData</c>'s generated identity table serves 477-766 instead.</para>
-/// <para>What is read is the identity plus the fields an automation client can act on without implementing enchantment effects: <c>max_level</c>, <c>anvil_cost</c>, the two enchanting-table cost curves and the raw <c>exclusive_set</c> holder-set references. Description, items, weight, slots and effects stay unread — no consumer here, and modelling them would only move the drop one layer up.</para>
+/// <para>What is read is the identity plus the fields an automation client can act on without implementing enchantment effects: <c>max_level</c>, <c>anvil_cost</c>, the two enchanting-table cost curves, the raw <c>exclusive_set</c> holder-set references, <c>weight</c> and the display-name string extracted from <c>description</c> (its translate key or literal text). Supported items, slots and the effect tree stay unread — no consumer here, and modelling them would only move the drop one layer up.</para>
 /// <para>From 1.20.5 a server that agreed a known-pack set may send an entry with NO element (<see cref="PackedRegistryEntry.Data"/> null), meaning "you already have this one from a pack you told me you know". Such an entry KEEPS its slot: the id is positional, so dropping one would shift every id after it and silently rename every enchantment past the gap. It falls back to <see cref="EnchantmentDefinition"/>'s declared defaults rather than to invented values.</para>
 /// </remarks>
 internal static class Enchantments
@@ -26,6 +26,12 @@ internal static class Enchantments
 
     /// <summary>The top-level element key carrying the conflicting-enchantment holder set.</summary>
     private const string ExclusiveSetKey = "exclusive_set";
+
+    /// <summary>The top-level element key carrying the weighted-random draw weight.</summary>
+    private const string WeightKey = "weight";
+
+    /// <summary>The top-level element key carrying the display-name text component.</summary>
+    private const string DescriptionKey = "description";
 
     /// <summary>The cost-curve member naming the level-I cost.</summary>
     private const string CostBaseKey = "base";
@@ -58,7 +64,9 @@ internal static class Enchantments
             AnvilCost: element.TryGet(AnvilCostKey, out NbtNumeric? anvilCost) ? Math.Max(0, anvilCost.AsInt) : 0,
             MinCost: ReadCost(element, MinCostKey),
             MaxCost: ReadCost(element, MaxCostKey),
-            ExclusiveSet: ReadHolderSet(element, ExclusiveSetKey));
+            ExclusiveSet: ReadHolderSet(element, ExclusiveSetKey),
+            Weight: element.TryGet(WeightKey, out NbtNumeric? weight) ? Math.Clamp(weight.AsInt, 1, 1024) : 1,
+            Description: ReadDescription(element));
     }
 
     /// <summary>Reads one cost curve compound, or null when the element omitted it or shaped it unrecognizably.</summary>
@@ -84,5 +92,18 @@ internal static class Enchantments
             NbtList ids => ids.OfType<NbtString>().Select(id => id.Value).ToArray(),
             _ => null,
         };
+    }
+
+    /// <summary>Reads the display-name text component down to the one string an automation client can use: the <c>translate</c> key when the component is one (every vanilla enchantment), the literal <c>text</c> when it is plain, null otherwise. Styles, siblings and the rest of the component tree have no consumer here.</summary>
+    private static string? ReadDescription(NbtCompound element)
+    {
+        if (!element.TryGet(DescriptionKey, out NbtTag? tag) || tag is not NbtCompound description)
+            return null;
+
+        if (description.TryGet("translate", out NbtTag? translate) && translate is NbtString key)
+            return key.Value;
+        if (description.TryGet("text", out NbtTag? text) && text is NbtString literal)
+            return literal.Value;
+        return null;
     }
 }
