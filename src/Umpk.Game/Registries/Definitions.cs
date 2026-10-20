@@ -132,9 +132,23 @@ public sealed record ChatDecorationDefinition(
 /// <remarks>The chat type also carries a <c>narration</c> decoration, read only by the client's accessibility narrator. UMPK has no narration surface, so it is deliberately not modelled: a decoded field with no consumer is indistinguishable from one that was never sent.</remarks>
 public sealed record ChatTypeDefinition(ChatDecorationDefinition? Chat);
 
-/// <summary>An enchantment registry entry.</summary>
+/// <summary>An enchantment registry entry, as synced by 767+ <c>registry_data</c>.</summary>
 /// <param name="MaxLevel">The maximum level the enchantment reaches.</param>
-public sealed record EnchantmentDefinition(int MaxLevel = 1);
+/// <param name="AnvilCost">The cost an anvil charges per application of this enchantment when merging; vanilla's old rarity multiplier in disguise (common 1 / uncommon 2 / rare 4 / very rare 8).</param>
+/// <param name="MinCost">The enchanting table's minimum cost curve at a given level: <c>base + per-level × (level − 1)</c>. Null when the entry carried none.</param>
+/// <param name="MaxCost">The enchanting table's maximum cost curve, same shape. Null when the entry carried none.</param>
+/// <param name="ExclusiveSet">Enchantments this one cannot coexist with, as the raw holder-set references the server sent: plain ids and <c>#tag</c> references. Null when absent. Tags are not expanded here — resolve them against the tags update before testing conflicts.</param>
+public sealed record EnchantmentDefinition(
+    int MaxLevel = 1,
+    int AnvilCost = 0,
+    EnchantmentCost? MinCost = null,
+    EnchantmentCost? MaxCost = null,
+    IReadOnlyList<string>? ExclusiveSet = null);
+
+/// <summary>The two-point linear cost curve an enchanting table rolls levels with.</summary>
+/// <param name="Base">The cost at level I.</param>
+/// <param name="PerLevelAboveFirst">The additional cost for each level above I.</param>
+public sealed record EnchantmentCost(int Base = 0, int PerLevelAboveFirst = 0);
 
 /// <summary>How a status effect is classified.</summary>
 public enum MobEffectCategory

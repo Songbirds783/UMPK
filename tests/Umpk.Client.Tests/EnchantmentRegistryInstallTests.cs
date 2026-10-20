@@ -100,6 +100,40 @@ public sealed class EnchantmentRegistryInstallTests
         Assert.Equal(1, sharp!.MaxLevel);
     }
 
+    /// <summary>The automation fields beyond <c>max_level</c> — anvil cost, both table-cost curves and the raw exclusive-set references — are lifted verbatim, tags left unexpanded with their <c>#</c> prefix. An entry carrying none of them falls back per member rather than inventing values.</summary>
+    [Fact]
+    public async Task TheAutomationFields_AreReadVerbatimAndDefaultedPerMember()
+    {
+        ApplierHarness harness = Build(SyncedProtocol);
+
+        var sharpness = new NbtCompound
+        {
+            ["max_level"] = new NbtInt(5),
+            ["anvil_cost"] = new NbtInt(8),
+            ["min_cost"] = new NbtCompound { ["base"] = new NbtInt(1), ["per_level_above_first"] = new NbtInt(11) },
+            ["max_cost"] = new NbtCompound { ["base"] = new NbtInt(21), ["per_level_above_first"] = new NbtInt(11) },
+            ["exclusive_set"] = new NbtString("#minecraft:exclusive_set/sword"),
+        };
+        await harness.ApplyAsync(RegistryData(
+            new PackedRegistryEntry(Sharpness, sharpness),
+            Entry("minecraft:efficiency", maxLevel: 5)));
+
+        Registry<EnchantmentDefinition> enchantments = harness.State.Registries!.Enchantments;
+        Assert.True(enchantments.TryGetValue(Sharpness, out EnchantmentDefinition? read));
+        Assert.Equal(5, read!.MaxLevel);
+        Assert.Equal(8, read.AnvilCost);
+        Assert.Equal(new EnchantmentCost(1, 11), read.MinCost);
+        Assert.Equal(new EnchantmentCost(21, 11), read.MaxCost);
+        Assert.Equal(new[] { "#minecraft:exclusive_set/sword" }, read.ExclusiveSet);
+
+        Assert.True(enchantments.TryGetValue(Identifier.Minecraft("efficiency"), out EnchantmentDefinition? bare));
+        Assert.Equal(5, bare!.MaxLevel);
+        Assert.Equal(0, bare.AnvilCost);
+        Assert.Null(bare.MinCost);
+        Assert.Null(bare.MaxCost);
+        Assert.Null(bare.ExclusiveSet);
+    }
+
     /// <summary>The control: every OTHER registry in this packet is still deliberately dropped. Without this, a change that installed whatever arrived would pass every case above.</summary>
     [Fact]
     public async Task ARegistryWithNoConsumer_IsStillDropped()

@@ -1830,13 +1830,35 @@ Umpk.Game.Registries.DimensionTypeDefinition.Height.init -> void
 Umpk.Game.Registries.DimensionTypeDefinition.MaxY.get -> int
 Umpk.Game.Registries.DimensionTypeDefinition.MinY.get -> int
 Umpk.Game.Registries.DimensionTypeDefinition.MinY.init -> void
+Umpk.Game.Registries.EnchantmentCost
+Umpk.Game.Registries.EnchantmentCost.<Clone>$() -> Umpk.Game.Registries.EnchantmentCost!
+Umpk.Game.Registries.EnchantmentCost.Base.get -> int
+Umpk.Game.Registries.EnchantmentCost.Base.init -> void
+Umpk.Game.Registries.EnchantmentCost.Deconstruct(out int Base, out int PerLevelAboveFirst) -> void
+Umpk.Game.Registries.EnchantmentCost.EnchantmentCost(int Base = 0, int PerLevelAboveFirst = 0) -> void
+Umpk.Game.Registries.EnchantmentCost.Equals(Umpk.Game.Registries.EnchantmentCost? other) -> bool
+Umpk.Game.Registries.EnchantmentCost.PerLevelAboveFirst.get -> int
+Umpk.Game.Registries.EnchantmentCost.PerLevelAboveFirst.init -> void
+override Umpk.Game.Registries.EnchantmentCost.Equals(object? obj) -> bool
+override Umpk.Game.Registries.EnchantmentCost.GetHashCode() -> int
+override Umpk.Game.Registries.EnchantmentCost.ToString() -> string!
+static Umpk.Game.Registries.EnchantmentCost.operator !=(Umpk.Game.Registries.EnchantmentCost? left, Umpk.Game.Registries.EnchantmentCost? right) -> bool
+static Umpk.Game.Registries.EnchantmentCost.operator ==(Umpk.Game.Registries.EnchantmentCost? left, Umpk.Game.Registries.EnchantmentCost? right) -> bool
 Umpk.Game.Registries.EnchantmentDefinition
 Umpk.Game.Registries.EnchantmentDefinition.<Clone>$() -> Umpk.Game.Registries.EnchantmentDefinition!
-Umpk.Game.Registries.EnchantmentDefinition.Deconstruct(out int MaxLevel) -> void
-Umpk.Game.Registries.EnchantmentDefinition.EnchantmentDefinition(int MaxLevel = 1) -> void
+Umpk.Game.Registries.EnchantmentDefinition.AnvilCost.get -> int
+Umpk.Game.Registries.EnchantmentDefinition.AnvilCost.init -> void
+Umpk.Game.Registries.EnchantmentDefinition.Deconstruct(out int MaxLevel, out int AnvilCost, out Umpk.Game.Registries.EnchantmentCost? MinCost, out Umpk.Game.Registries.EnchantmentCost? MaxCost, out System.Collections.Generic.IReadOnlyList<string!>? ExclusiveSet) -> void
+Umpk.Game.Registries.EnchantmentDefinition.EnchantmentDefinition(int MaxLevel = 1, int AnvilCost = 0, Umpk.Game.Registries.EnchantmentCost? MinCost = null, Umpk.Game.Registries.EnchantmentCost? MaxCost = null, System.Collections.Generic.IReadOnlyList<string!>? ExclusiveSet = null) -> void
 Umpk.Game.Registries.EnchantmentDefinition.Equals(Umpk.Game.Registries.EnchantmentDefinition? other) -> bool
+Umpk.Game.Registries.EnchantmentDefinition.ExclusiveSet.get -> System.Collections.Generic.IReadOnlyList<string!>?
+Umpk.Game.Registries.EnchantmentDefinition.ExclusiveSet.init -> void
+Umpk.Game.Registries.EnchantmentDefinition.MaxCost.get -> Umpk.Game.Registries.EnchantmentCost?
+Umpk.Game.Registries.EnchantmentDefinition.MaxCost.init -> void
 Umpk.Game.Registries.EnchantmentDefinition.MaxLevel.get -> int
 Umpk.Game.Registries.EnchantmentDefinition.MaxLevel.init -> void
+Umpk.Game.Registries.EnchantmentDefinition.MinCost.get -> Umpk.Game.Registries.EnchantmentCost?
+Umpk.Game.Registries.EnchantmentDefinition.MinCost.init -> void
 Umpk.Game.Registries.EntityTypeDefinition
 Umpk.Game.Registries.EntityTypeDefinition.<Clone>$() -> Umpk.Game.Registries.EntityTypeDefinition!
 Umpk.Game.Registries.EntityTypeDefinition.Deconstruct(out float Width, out float Height) -> void
