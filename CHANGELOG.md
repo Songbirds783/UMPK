@@ -2,6 +2,12 @@
 
 This file records notable changes to UMPK.
 
+## 0.9.0-beta.7.5.4 - 2026-10-20
+
+- Surface `minecraft:update_tags` from the configuration driver to the applier chain: the phase loop's surfaced-packet list named registry_data and left tag sync on the consumed-and-ignored pile, so a server that (as the 26.3 wire capture from a live server shows) delivers tags exactly once — during CONFIGURATION, never again from play — had them decoded and silently dropped before any applier could see them. Both configuration entries (initial login and the play-to-configuration re-entry) run the same loop, so one fix covers both.
+- Install the update-tags packet's `minecraft:enchantment` arm into `ClientState.EnchantmentTags`: tag members arrive as numeric registry ids and resolve into enchantment ids via the just-installed registry, keyed by tag id — the missing half of the enchantment registry, since an `exclusive_set` reference is a `#tag` id that means nothing until the members are known. Members that fail to resolve drop individually (a gap, not a guess), every other registry's tags stay dropped for want of a consumer, and a payload with no enchantment arm leaves the map alone.
+- The play-phase slot stays the upstream-declared KnownGap marker, now with a reason that says why: the 26.3 wire capture shows tags arrive exactly once, at the CONFIGURATION-phase wire id, and never at play — so the mid-session re-send is the only unmodelled part, and binding it was tried and reverted when conformance flagged it as redundant against the capture.
+
 ## 0.9.0-beta.7.5.3 - 2026-10-20
 
 - The enchantment registry's definition parser lifts the automation fields beyond `max_level`: `anvil_cost` (vanilla's old rarity multiplier), both enchanting-table cost curves (`min_cost`/`max_cost`, read as `base` + `per_level_above_first`), the raw `exclusive_set` holder-set references (plain ids and `#tag` strings, left unexpanded — expanding tags stays the tags update's job), the weighted-random draw `weight` (clamped to the codec's 1-1024 range), and the display name extracted from `description` (its `translate` key — every vanilla enchantment — or literal `text`). `EnchantmentDefinition` grows `AnvilCost`/`MinCost`/`MaxCost`/`ExclusiveSet`/`Weight`/`Description` plus a new `EnchantmentCost` record, elided known-pack entries keep falling back per member, and the remaining definition fields (items, slots, the effect tree) stay unmodelled for want of a consumer.
